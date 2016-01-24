@@ -40,7 +40,7 @@ namespace FootballSimulation
             // Integrate velocity.
             Position += Velocity*time;
         }
-        
+
         public override string ToString() =>
             "{Mass=" + Mass +
             ",MaxForce=" + MaxForce +
