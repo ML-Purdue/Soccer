@@ -18,13 +18,12 @@ namespace FootballSimulation
 
         private const float EpsilonSquared = 1;
 
-        private readonly PointMass _originalBall;
+        private readonly PointMass _ball;
+        private readonly Vector2 _ballStartingPosition;
         private readonly SimulateHandler _simulatePlayingHandler;
         private readonly SimulateHandler _simulateResettingHandler;
         private readonly IEnumerable<IEnumerable<Vector2>> _startingPositions;
         private readonly IReadOnlyCollection<Team> _teams;
-
-        private PointMass _ball;
 
         public SimulateHandler Simulate;
 
@@ -46,7 +45,7 @@ namespace FootballSimulation
             _teams = teams;
             _startingPositions = GetStartingPositions(teams);
             _ball = ball;
-            _originalBall = new PointMass(ball);
+            _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
             PlayerRadius = playerRadius;
             BallRadius = ballRadius;
@@ -122,7 +121,7 @@ namespace FootballSimulation
 
         private void OnReset()
         {
-            _ball = new PointMass(_originalBall);
+            _ball.Reset(_ballStartingPosition);
             Simulate = _simulatePlayingHandler;
         }
 

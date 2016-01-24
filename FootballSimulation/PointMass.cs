@@ -19,11 +19,6 @@ namespace FootballSimulation
             Velocity = velocity;
         }
 
-        public PointMass(IPointMass p) :
-            this(p.Mass, p.MaxForce, p.MaxSpeed, p.Position, p.Velocity)
-        {
-        }
-
         public float Mass { get; }
 
         public float MaxForce { get; }
@@ -45,12 +40,18 @@ namespace FootballSimulation
             // Integrate velocity.
             Position += Velocity*time;
         }
-
+        
         public override string ToString() =>
             "{Mass=" + Mass +
             ",MaxForce=" + MaxForce +
             ",MaxSpeed=" + MaxSpeed +
             ",Position=" + Position +
             ",Velocity=" + Velocity + "}";
+
+        internal void Reset(Vector2 position)
+        {
+            Position = position;
+            Velocity = Vector2.Zero;
+        }
     }
 }
