@@ -26,7 +26,7 @@ namespace FootballSimulation
 
         public RectangleF GoalBounds { get; }
 
-        public ReadOnlyCollection<IReadonlyVehicle> Players => _players.ToList<IReadonlyVehicle>().AsReadOnly();
+        public ReadOnlyCollection<IPointMass> Players => _players.ToList<IPointMass>().AsReadOnly();
 
         public int Points { get; private set; }
 

@@ -45,7 +45,6 @@
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IDirection.cs" />
     <Compile Include="IPointMass.cs" />
-    <Compile Include="IReadonlyVehicle.cs" />
     <Compile Include="ISimulation.cs" />
     <Compile Include="ITeam.cs" />
     <Compile Include="ITeamStrategy.cs" />

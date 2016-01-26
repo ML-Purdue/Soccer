@@ -8,7 +8,7 @@ namespace FootballSimulation
 
         RectangleF GoalBounds { get; }
 
-        ReadOnlyCollection<IReadonlyVehicle> Players { get; }
+        ReadOnlyCollection<IPointMass> Players { get; }
 
         int Points { get; }
     }

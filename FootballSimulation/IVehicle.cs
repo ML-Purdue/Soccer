@@ -1,7 +1,7 @@
 ﻿namespace FootballSimulation
 {
-    public interface IVehicle : IReadonlyVehicle
+    public interface IVehicle
     {
-        new IDirection SteeringStrategy { set; }
+        IDirection SteeringStrategy { get; set; }
     }
 }
