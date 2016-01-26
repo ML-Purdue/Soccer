@@ -35,8 +35,8 @@ namespace FootballSimulation
             Contract.Requires<ArgumentNullException>(simulation != null);
 
             var kick = _strategy.Execute(simulation, this);
-            if (!IsKickValid(kick))
-                throw new InvalidOperationException("The kicking playing must be part of the team.");
+            if (!IsKickValid(kick, simulation))
+                throw new InvalidOperationException("Invalid kick.");
             return kick;
         }
 
@@ -50,6 +50,8 @@ namespace FootballSimulation
 
         internal void OnGoalScored() => Points++;
 
-        private bool IsKickValid(Kick kick) => _players.Any(p => p == kick.Player);
+        private bool IsKickValid(Kick kick, ISimulation simulation) =>
+            _players.Any(p => p == kick.Player) && (kick.Player.Position - simulation.Ball.Position).Length() <
+                (simulation.PlayerRadius + simulation.BallRadius);
     }
 }
