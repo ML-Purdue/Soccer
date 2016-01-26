@@ -24,9 +24,9 @@ namespace FootballSimulation
 
         public string Strategy => _strategy.Name;
 
-        public RectangleF GoalBounds { get; }
-
         public ReadOnlyCollection<IPointMass> Players => _players.ToList<IPointMass>().AsReadOnly();
+
+        public RectangleF GoalBounds { get; }
 
         public int Points { get; private set; }
 
