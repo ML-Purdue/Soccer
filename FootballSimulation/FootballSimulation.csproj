@@ -48,7 +48,6 @@
     <Compile Include="ISimulation.cs" />
     <Compile Include="ITeam.cs" />
     <Compile Include="ITeamStrategy.cs" />
-    <Compile Include="IVehicle.cs" />
     <Compile Include="Kick.cs" />
     <Compile Include="NullSteeringStrategy.cs" />
     <Compile Include="NullTeamStrategy.cs" />

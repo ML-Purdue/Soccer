@@ -6,13 +6,13 @@ namespace FootballSimulation
 {
     public struct Kick : IDirection
     {
-        public IVehicle Player { get; }
+        public IPointMass Player { get; }
 
         public Vector2 Direction { get; }
 
         public static readonly Kick None = new Kick(null, Vector2.Zero);
 
-        public Kick(IVehicle player, Vector2 force)
+        public Kick(IPointMass player, Vector2 force)
         {
             Contract.Requires<ArgumentNullException>(player != null);
 

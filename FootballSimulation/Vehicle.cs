@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace FootballSimulation
 {
-    public sealed class Vehicle : PointMass, IVehicle
+    public sealed class Vehicle : PointMass
     {
         private IDirection _steeringStrategy = NullSteeringStrategy.Instance;
 
