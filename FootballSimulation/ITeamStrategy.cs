@@ -2,6 +2,8 @@
 {
     public interface ITeamStrategy
     {
-        Kick Execute();
+        string Name { get; }
+
+        Kick Execute(ISimulation simulation, Team team);
     }
 }

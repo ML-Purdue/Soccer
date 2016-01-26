@@ -46,6 +46,7 @@
     <Compile Include="IDirection.cs" />
     <Compile Include="IPointMass.cs" />
     <Compile Include="IReadonlyVehicle.cs" />
+    <Compile Include="ISimulation.cs" />
     <Compile Include="ITeam.cs" />
     <Compile Include="ITeamStrategy.cs" />
     <Compile Include="IVehicle.cs" />
@@ -57,7 +58,6 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Team.cs" />
-    <Compile Include="TeamStrategy.cs" />
     <Compile Include="VectorExtensions.cs" />
     <Compile Include="Vehicle.cs" />
   </ItemGroup>

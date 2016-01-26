@@ -8,6 +8,8 @@
 
         public static NullTeamStrategy Instance => new NullTeamStrategy();
 
-        public Kick Execute() => Kick.None;
+        public string Name => "Null";
+
+        public Kick Execute(ISimulation simulation, Team team) => Kick.None;
     }
 }

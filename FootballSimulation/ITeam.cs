@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 
 namespace FootballSimulation
 {
     public interface ITeam
     {
-        string Name { get; }
+        string Strategy { get; }
 
         RectangleF GoalBounds { get; }
 
-        IReadOnlyCollection<IReadonlyVehicle> Players { get; }
+        ReadOnlyCollection<IReadonlyVehicle> Players { get; }
 
         int Points { get; }
     }

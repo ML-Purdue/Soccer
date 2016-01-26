@@ -31,13 +31,8 @@ namespace FootballSimulation
 
         public void ApplyForce(Vector2 force, float time)
         {
-            // Prevent force from becoming too large and calculate acceleration.
             var acceleration = force.ClampMagnitude(MaxForce)/Mass;
-
-            // Integrate acceleration and prevent particle from exceeding the maximum speed.
             Velocity = (Velocity + acceleration*time).ClampMagnitude(MaxSpeed);
-
-            // Integrate velocity.
             Position += Velocity*time;
         }
 

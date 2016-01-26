@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -9,39 +8,48 @@ namespace FootballSimulation
     public sealed class Team : ITeam
     {
         private readonly ReadOnlyCollection<Vehicle> _players;
-        internal ITeamStrategy Strategy;
+        private readonly ITeamStrategy _strategy;
 
-        public Team(string name, RectangleF goalBounds, ITeamStrategy strategy, ReadOnlyCollection<Vehicle> players)
+        public Team(ITeamStrategy strategy, ReadOnlyCollection<Vehicle> players, RectangleF goalBounds)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentNullException>(strategy != null);
             Contract.Requires<ArgumentNullException>(players != null);
             Contract.Requires<ArgumentException>(Contract.ForAll(players, p => p != null));
+            Contract.Requires<ArgumentException>(goalBounds.Width > 0 && goalBounds.Height > 0);
 
-            Name = name;
-            GoalBounds = goalBounds;
-            Strategy = strategy;
+            _strategy = strategy;
             _players = players;
+            GoalBounds = goalBounds;
         }
 
-        public string Name { get; }
+        public string Strategy => _strategy.Name;
 
         public RectangleF GoalBounds { get; }
 
-        public IReadOnlyCollection<IReadonlyVehicle> Players => _players;
+        public ReadOnlyCollection<IReadonlyVehicle> Players => _players.ToList<IReadonlyVehicle>().AsReadOnly();
 
         public int Points { get; private set; }
 
-        public Kick ExecuteStrategy() => Strategy.Execute();
+        public Kick ExecuteStrategy(ISimulation simulation)
+        {
+            Contract.Requires<ArgumentNullException>(simulation != null);
+
+            var kick = _strategy.Execute(simulation, this);
+            if (!IsKickValid(kick))
+                throw new InvalidOperationException("The kicking playing must be part of the team.");
+            return kick;
+        }
 
         public void Simulate(float time) => _players.ForEach(p => p.Simulate(time));
 
         public override string ToString() =>
-            "{Name=" + Name +
+            "{StrategyName=" + Strategy +
             ",GoalBounds=" + GoalBounds +
-            ",Strategy=" + Strategy.GetType().AssemblyQualifiedName +
-            ",Players={" + string.Join<Vehicle>(",", _players.ToArray()) + "}}";
+            ",Players={" + string.Join<Vehicle>(",", _players.ToArray()) + "}" +
+            ",Points=" + Points + "}";
 
         internal void OnGoalScored() => Points++;
+
+        private bool IsKickValid(Kick kick) => _players.Any(p => p == kick.Player);
     }
 }
