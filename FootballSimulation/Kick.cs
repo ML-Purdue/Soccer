@@ -4,20 +4,20 @@ using System.Numerics;
 
 namespace FootballSimulation
 {
-    public struct Kick : IDirection
+    public struct Kick
     {
-        public IPointMass Player { get; }
+        public IVehicle Player { get; }
 
-        public Vector2 Direction { get; }
+        public Vector2 Force { get; }
 
         public static readonly Kick None = new Kick(null, Vector2.Zero);
 
-        public Kick(IPointMass player, Vector2 force)
+        public Kick(IVehicle player, Vector2 force)
         {
             Contract.Requires<ArgumentNullException>(player != null);
 
             Player = player;
-            Direction = force;
+            Force = force;
         }
     }
 }

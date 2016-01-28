@@ -2,13 +2,15 @@
 
 namespace FootballSimulation
 {
-    public interface IPointMass
+    public interface IVehicle
     {
         float Mass { get; }
 
         float MaxForce { get; }
 
         float MaxSpeed { get; }
+
+        float Radius { get; }
 
         Vector2 Position { get; }
 

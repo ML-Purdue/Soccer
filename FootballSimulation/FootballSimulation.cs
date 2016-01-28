@@ -7,27 +7,20 @@ using System.Numerics;
 
 namespace FootballSimulation
 {
-    public sealed class Simulation : ISimulation
+    public sealed class FootballSimulation : ISimulation
     {
-        private readonly PointMass _ball;
+        private readonly Vehicle _ball;
         private readonly Vector2 _ballStartingPosition;
-        private readonly IEnumerable<Reset> _resets;
+        private readonly IEnumerable<IEnumerable<Vector2>> _startingPositions;
         private readonly ReadOnlyCollection<Team> _teams;
 
         private SimulateState _simulate;
 
-        public Simulation(
-            ReadOnlyCollection<Team> teams,
-            PointMass ball,
-            RectangleF pitchBounds,
-            float playerRadius,
-            float ballRadius)
+        public FootballSimulation(ReadOnlyCollection<Team> teams, Vehicle ball, RectangleF pitchBounds)
         {
             Contract.Requires<ArgumentNullException>(teams != null);
             Contract.Requires<ArgumentNullException>(ball != null);
             Contract.Requires<ArgumentException>(pitchBounds.Width > 0 && pitchBounds.Height > 0);
-            Contract.Requires<ArgumentException>(playerRadius > 0);
-            Contract.Requires<ArgumentException>(ballRadius > 0);
             Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => t != null));
             Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => pitchBounds.Contains(t.GoalBounds)));
             Contract.Requires<ArgumentException>(Contract.ForAll(teams,
@@ -36,25 +29,26 @@ namespace FootballSimulation
 
             _simulate = SimulatePlaying;
             _teams = teams;
-            _resets = from t in teams select new Reset(t);
+            _startingPositions = GetStartingPositions(teams);
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
-            PlayerRadius = playerRadius;
-            BallRadius = ballRadius;
         }
 
         public EventHandler<Team> GoalScored { get; set; }
 
+        private bool IsReset =>
+            _teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (a, b) =>
+                (a.Position - b).LengthSquared() < a.Radius).All(x => x)).All(x => x);
+
         public ReadOnlyCollection<ITeam> Teams => _teams.ToList<ITeam>().AsReadOnly();
 
-        public IPointMass Ball => _ball;
+        public IVehicle Ball => _ball;
 
         public RectangleF PitchBounds { get; }
 
-        public float PlayerRadius { get; }
-
-        public float BallRadius { get; }
+        private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(ReadOnlyCollection<Team> teams) =>
+            from t in teams select from p in t.Players select p.Position;
 
         public void Simulate(float time) => _simulate(time);
 
@@ -62,18 +56,16 @@ namespace FootballSimulation
         {
             var kicks = from team in _teams select team.ExecuteStrategy(this);
             _teams.ForEach(t => t.Simulate(time));
-            _ball.ApplyForce(ResolveBallDirection(kicks), time);
+            _ball.SetSteeringDirection(ResolveBallDirection(kicks));
+            _ball.Simulate(time);
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
         private void SimulateResetting(float time)
         {
-            _resets.ForEach(s => s.Execute());
+            // TODO: Execute reset.
             _teams.ForEach(t => t.Simulate(time));
-            if (_resets.All(s => s.IsReset))
-                return;
-            _ball.Reset(_ballStartingPosition);
-            _simulate = SimulatePlaying;
+            if (IsReset) OnReset();
         }
 
         private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
@@ -88,29 +80,13 @@ namespace FootballSimulation
             GoalScored?.Invoke(this, team);
             _simulate = SimulateResetting;
         }
+        
+        private void OnReset()
+        {
+            _ball.Reset(_ballStartingPosition);
+            _simulate = SimulatePlaying;
+        }
 
         private delegate void SimulateState(float time);
-
-        private sealed class Reset
-        {
-            private const float Epsilon = 1;
-            private readonly IEnumerable<Vector2> _positions;
-            private readonly Team _team;
-
-            public Reset(Team team)
-            {
-                _team = team;
-                _positions = from p in team.Players select p.Position;
-            }
-
-            public bool IsReset =>
-                _positions.Zip(from p in _team.Players select p.Position,
-                    (a, b) => (a - b).LengthSquared() <= Epsilon).All(x => x);
-
-            public void Execute()
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

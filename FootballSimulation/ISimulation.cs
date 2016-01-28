@@ -6,12 +6,8 @@ namespace FootballSimulation
     {
         ReadOnlyCollection<ITeam> Teams { get; }
 
-        IPointMass Ball { get; }
+        IVehicle Ball { get; }
 
         RectangleF PitchBounds { get; }
-
-        float PlayerRadius { get; }
-
-        float BallRadius { get; }
     }
 }

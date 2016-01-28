@@ -24,7 +24,7 @@ namespace FootballSimulation
 
         public string Strategy => _strategy.Name;
 
-        public ReadOnlyCollection<IPointMass> Players => _players.ToList<IPointMass>().AsReadOnly();
+        public ReadOnlyCollection<IVehicle> Players => _players.ToList<IVehicle>().AsReadOnly();
 
         public RectangleF GoalBounds { get; }
 
@@ -35,23 +35,17 @@ namespace FootballSimulation
             Contract.Requires<ArgumentNullException>(simulation != null);
 
             var kick = _strategy.Execute(simulation, this);
-            if (!IsKickValid(kick, simulation))
+            if (!IsKickValid(kick.Player, simulation))
                 throw new InvalidOperationException("Invalid kick.");
             return kick;
         }
 
         public void Simulate(float time) => _players.ForEach(p => p.Simulate(time));
 
-        public override string ToString() =>
-            "{StrategyName=" + Strategy +
-            ",GoalBounds=" + GoalBounds +
-            ",Players={" + string.Join<Vehicle>(",", _players.ToArray()) + "}" +
-            ",Points=" + Points + "}";
-
         internal void OnGoalScored() => Points++;
 
-        private bool IsKickValid(Kick kick, ISimulation simulation) =>
-            _players.Any(p => p == kick.Player) && (kick.Player.Position - simulation.Ball.Position).Length() <
-                (simulation.PlayerRadius + simulation.BallRadius);
+        private bool IsKickValid(IVehicle player, ISimulation simulation) =>
+            _players.Any(p => p == player) && (player.Position - simulation.Ball.Position).Length() <
+                (player.Radius + simulation.Ball.Radius);
     }
 }
