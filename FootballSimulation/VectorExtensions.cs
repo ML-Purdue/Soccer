@@ -2,7 +2,7 @@
 
 namespace FootballSimulation
 {
-    internal static class VectorExtensions
+    public static class VectorExtensions
     {
         /// <summary>
         ///     Returns a copy of the <see cref="Vector2" /> with its magnitude clamped to <code>maxLength</code>.
