@@ -47,7 +47,7 @@ namespace FootballSimulation
 
         public RectangleF PitchBounds { get; }
 
-        private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(ReadOnlyCollection<Team> teams) =>
+        private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(IEnumerable<Team> teams) =>
             from t in teams select from p in t.Players select p.Position;
 
         public void Simulate(float time) => _simulate(time);
@@ -63,7 +63,7 @@ namespace FootballSimulation
 
         private void SimulateResetting(float time)
         {
-            // TODO: Execute reset.
+            _teams.ForEach(t => t.ExecuteStrategy(this));
             _teams.ForEach(t => t.Simulate(time));
             if (IsReset) OnReset();
         }
@@ -78,11 +78,13 @@ namespace FootballSimulation
         {
             team.OnGoalScored();
             GoalScored?.Invoke(this, team);
+            _teams.ForEach(t => t.Strategy = NullTeamStrategy.Instance); // TODO: Change to TeamResetStrategy.
             _simulate = SimulateResetting;
         }
         
         private void OnReset()
         {
+            _teams.ForEach(t => t.Strategy = NullTeamStrategy.Instance);
             _ball.Reset(_ballStartingPosition);
             _simulate = SimulatePlaying;
         }

@@ -4,7 +4,7 @@ namespace FootballSimulation
 {
     public interface ITeam
     {
-        string Strategy { get; }
+        ITeamStrategy Strategy { get; }
 
         RectangleF GoalBounds { get; }
 

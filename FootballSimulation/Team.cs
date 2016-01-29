@@ -8,7 +8,6 @@ namespace FootballSimulation
     public sealed class Team : ITeam
     {
         private readonly ReadOnlyCollection<Vehicle> _players;
-        private readonly ITeamStrategy _strategy;
 
         public Team(ITeamStrategy strategy, ReadOnlyCollection<Vehicle> players, RectangleF goalBounds)
         {
@@ -17,12 +16,12 @@ namespace FootballSimulation
             Contract.Requires<ArgumentException>(Contract.ForAll(players, p => p != null));
             Contract.Requires<ArgumentException>(goalBounds.Width > 0 && goalBounds.Height > 0);
 
-            _strategy = strategy;
+            Strategy = strategy;
             _players = players;
             GoalBounds = goalBounds;
         }
 
-        public string Strategy => _strategy.Name;
+        public ITeamStrategy Strategy { get; set; }
 
         public ReadOnlyCollection<IVehicle> Players => _players.ToList<IVehicle>().AsReadOnly();
 
@@ -34,7 +33,7 @@ namespace FootballSimulation
         {
             Contract.Requires<ArgumentNullException>(simulation != null);
 
-            var kick = _strategy.Execute(simulation, this);
+            var kick = Strategy.Execute(simulation, this);
             if (!IsKickValid(kick.Player, simulation))
                 throw new InvalidOperationException("Invalid kick.");
             return kick;
@@ -46,6 +45,6 @@ namespace FootballSimulation
 
         private bool IsKickValid(IVehicle player, ISimulation simulation) =>
             _players.Any(p => p == player) && (player.Position - simulation.Ball.Position).Length() <
-                (player.Radius + simulation.Ball.Radius);
+            player.Radius + simulation.Ball.Radius;
     }
 }
