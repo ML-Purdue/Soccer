@@ -3,6 +3,9 @@ using System.Numerics;
 
 namespace FootballSimulation
 {
+    /// <summary>
+    ///     Provides extension methods for the <see cref="RectangleF" /> structure.
+    /// </summary>
     public static class RectangleFExtensions
     {
         /// <summary>
@@ -14,7 +17,7 @@ namespace FootballSimulation
         ///     This method returns <c>true</c> if the point is contained within this <see cref="RectangleF" /> structure;
         ///     otherwise <c>false</c>.
         /// </returns>
-        public static bool Contains(this RectangleF rectangle, Vector2 vector) =>
-            rectangle.Contains(vector.X, vector.Y);
+        public static bool Contains(this RectangleF rectangle, Vector2 vector)
+            => rectangle.Contains(vector.X, vector.Y);
     }
 }

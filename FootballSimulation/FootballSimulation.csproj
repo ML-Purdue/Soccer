@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -37,8 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="IVehicle.cs" />
-    <Compile Include="ISimulation.cs" />
+    <Compile Include="IPointMass.cs" />
+    <Compile Include="IFootballSimulation.cs" />
     <Compile Include="ITeam.cs" />
     <Compile Include="ITeamStrategy.cs" />
     <Compile Include="Kick.cs" />
@@ -48,7 +52,7 @@
     <Compile Include="RectangleFExtensions.cs" />
     <Compile Include="Team.cs" />
     <Compile Include="VectorExtensions.cs" />
-    <Compile Include="Vehicle.cs" />
+    <Compile Include="PointMass.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

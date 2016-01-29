@@ -8,24 +8,30 @@ using System.Numerics;
 
 namespace FootballSimulation
 {
-    public sealed class FootballSimulation : ISimulation
+    /// <summary>
+    ///     Represents a simulation of an indoor football game.
+    /// </summary>
+    public sealed class FootballSimulation : IFootballSimulation
     {
-        private readonly Vehicle _ball;
+        private readonly PointMass _ball;
         private readonly Vector2 _ballStartingPosition;
         private readonly IEnumerable<IEnumerable<Vector2>> _startingPositions;
         private readonly ReadOnlyCollection<Team> _teams;
 
         private SimulateState _simulate;
 
-        public FootballSimulation(ReadOnlyCollection<Team> teams, Vehicle ball, RectangleF pitchBounds)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="FootballSimulation" /> class.
+        /// </summary>
+        /// <param name="teams">The teams to be played against each other.</param>
+        /// <param name="ball">The ball.</param>
+        /// <param name="pitchBounds">The pitch boundaries.</param>
+        public FootballSimulation(ReadOnlyCollection<Team> teams, PointMass ball, RectangleF pitchBounds)
         {
             Contract.Requires<ArgumentNullException>(teams != null);
             Contract.Requires<ArgumentNullException>(ball != null);
             Contract.Requires<ArgumentException>(pitchBounds.Width > 0 && pitchBounds.Height > 0);
-            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => t != null));
-            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => pitchBounds.Contains(t.GoalBounds)));
-            Contract.Requires<ArgumentException>(Contract.ForAll(teams,
-                t => Contract.ForAll(t.Players, p => pitchBounds.Contains(p.Position))));
+            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => IsTeamValid(t, pitchBounds)));
             Contract.Requires<ArgumentException>(pitchBounds.Contains(ball.Position));
 
             _simulate = SimulatePlaying;
@@ -36,28 +42,43 @@ namespace FootballSimulation
             PitchBounds = pitchBounds;
         }
 
+        /// <summary>Called when a goal is scored.</summary>
         public EventHandler<Team> GoalScored { get; set; }
 
-        private bool IsReset =>
-            _teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (a, b) =>
-                (a.Position - b).LengthSquared() < a.Radius).All(x => x)).All(x => x);
+        private bool IsReset
+            =>
+                _teams.Zip(_startingPositions,
+                    (t, s) => t.Players.Zip(s, (a, b) => (a.Position - b).LengthSquared() < a.Radius).All(x => x))
+                    .All(x => x);
 
+        /// <summary>The teams playing against one another.</summary>
         public ReadOnlyCollection<ITeam> Teams => _teams.ToList<ITeam>().AsReadOnly();
 
-        public IVehicle Ball => _ball;
+        /// <summary>The ball.</summary>
+        public IPointMass Ball => _ball;
 
+        /// <summary>The pitch boundaries.</summary>
         public RectangleF PitchBounds { get; }
 
-        private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(IEnumerable<Team> teams) =>
-            from t in teams select from p in t.Players select p.Position;
+        private static bool IsTeamValid(Team team, RectangleF pitchBounds)
+            =>
+                team != null && pitchBounds.Contains(team.GoalBounds) &&
+                team.Players.All(p => pitchBounds.Contains(p.Position));
 
+        private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(IEnumerable<Team> teams)
+            => from t in teams select from p in t.Players select p.Position;
+
+        /// <summary>
+        ///     Simulates one step of the football game.
+        /// </summary>
+        /// <param name="time">The time step length.</param>
         public void Simulate(float time) => _simulate(time);
 
         private void SimulatePlaying(float time)
         {
             var kicks = from team in _teams select team.ExecuteStrategy(this);
             _teams.ForEach(t => t.Simulate(time));
-            _ball.SetSteeringDirection(ResolveBallDirection(kicks));
+            _ball.SetForce(ResolveBallDirection(kicks));
             _ball.Simulate(time);
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
@@ -82,7 +103,7 @@ namespace FootballSimulation
             _teams.ForEach(t => t.Strategy = NullTeamStrategy.Instance); // TODO: Change to TeamResetStrategy.
             _simulate = SimulateResetting;
         }
-        
+
         private void OnReset()
         {
             _teams.ForEach(t => t.Strategy = NullTeamStrategy.Instance);

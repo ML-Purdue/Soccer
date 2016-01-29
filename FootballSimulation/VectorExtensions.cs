@@ -2,6 +2,9 @@
 
 namespace FootballSimulation
 {
+    /// <summary>
+    ///     Provides extension methods for the <see cref="Vector2" /> structure.
+    /// </summary>
     public static class VectorExtensions
     {
         /// <summary>
