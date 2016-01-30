@@ -6,7 +6,7 @@ namespace FootballSimulation
     /// <summary>
     ///     Represents a simulation of an indoor football game.
     /// </summary>
-    public interface IFootballSimulation
+    public interface ISimulation
     {
         /// <summary>The teams playing against one another.</summary>
         ReadOnlyCollection<ITeam> Teams { get; }

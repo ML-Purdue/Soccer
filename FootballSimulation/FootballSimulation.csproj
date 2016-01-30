@@ -40,13 +40,13 @@
   <ItemGroup>
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IPointMass.cs" />
-    <Compile Include="IFootballSimulation.cs" />
+    <Compile Include="ISimulation.cs" />
     <Compile Include="ITeam.cs" />
     <Compile Include="ITeamStrategy.cs" />
     <Compile Include="Kick.cs" />
     <Compile Include="NullTeamStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FootballSimulation.cs" />
+    <Compile Include="Simulation.cs" />
     <Compile Include="RectangleFExtensions.cs" />
     <Compile Include="Team.cs" />
     <Compile Include="VectorExtensions.cs" />

@@ -18,6 +18,6 @@
         /// <summary>
         ///     Returns <c>Kick.None</c>.
         /// </summary>
-        public Kick Execute(IFootballSimulation simulation, Team team) => Kick.None;
+        public Kick Execute(ISimulation simulation, Team team) => Kick.None;
     }
 }

@@ -56,7 +56,7 @@ namespace FootballSimulation
         /// <summary>Executes the team strategy.</summary>
         /// <param name="simulation">The simulation in which the is taking part.</param>
         /// <returns>The kick.</returns>
-        public Kick ExecuteStrategy(IFootballSimulation simulation)
+        public Kick ExecuteStrategy(ISimulation simulation)
         {
             Contract.Requires<ArgumentNullException>(simulation != null);
             Contract.Requires<ArgumentException>(Contract.Exists(simulation.Teams, t => t == this));
@@ -75,7 +75,7 @@ namespace FootballSimulation
 
         internal void OnGoalScored() => GoalsScored++;
 
-        private bool IsKickValid(IPointMass player, IFootballSimulation simulation) =>
+        private bool IsKickValid(IPointMass player, ISimulation simulation) =>
             _players.Any(p => p == player) &&
             (player.Position - simulation.Ball.Position).Length() < player.Radius + simulation.Ball.Radius;
     }

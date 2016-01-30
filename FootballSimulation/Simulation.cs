@@ -11,7 +11,7 @@ namespace FootballSimulation
     /// <summary>
     ///     Represents a simulation of an indoor football game.
     /// </summary>
-    public sealed class FootballSimulation : IFootballSimulation
+    public sealed class Simulation : ISimulation
     {
         private readonly PointMass _ball;
         private readonly Vector2 _ballStartingPosition;
@@ -21,12 +21,12 @@ namespace FootballSimulation
         private SimulateState _simulate;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="FootballSimulation" /> class.
+        ///     Initializes a new instance of the <see cref="Simulation" /> class.
         /// </summary>
         /// <param name="teams">The teams to be played against each other.</param>
         /// <param name="ball">The ball.</param>
         /// <param name="pitchBounds">The pitch boundaries.</param>
-        public FootballSimulation(ReadOnlyCollection<Team> teams, PointMass ball, RectangleF pitchBounds)
+        public Simulation(ReadOnlyCollection<Team> teams, PointMass ball, RectangleF pitchBounds)
         {
             Contract.Requires<ArgumentNullException>(teams != null);
             Contract.Requires<ArgumentNullException>(ball != null);
