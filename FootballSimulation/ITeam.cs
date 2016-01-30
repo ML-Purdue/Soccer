@@ -12,7 +12,7 @@ namespace FootballSimulation
         ITeamStrategy Strategy { get; }
 
         /// <summary>The team players.</summary>
-        ReadOnlyCollection<IPointMass> Players { get; }
+        ReadOnlyCollection<PointMass> Players { get; }
 
         /// <summary>The bounds of the team's goal.</summary>
         RectangleF GoalBounds { get; }
