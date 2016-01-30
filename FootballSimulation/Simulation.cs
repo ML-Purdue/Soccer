@@ -88,6 +88,7 @@ namespace FootballSimulation
             _teams.ForEach(t => t.Simulate(time));
             _ball.SetForce(ResolveBallDirection(kicks));
             _ball.Simulate(time);
+            // TODO: Deal with the ball bouncing off players
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
@@ -100,8 +101,10 @@ namespace FootballSimulation
 
         private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
         {
-            // Don't forget to take into account collision with pitch boundaries.
-            throw new NotImplementedException();
+            // Deal with the kicks
+            var combinedKickForce = new Vector2(0);
+            kicks.ForEach(k => combinedKickForce += k.Force);
+            return combinedKickForce;
         }
 
         private void OnGoalScored(Team team)
