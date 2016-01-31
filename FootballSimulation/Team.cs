@@ -45,7 +45,7 @@ namespace FootballSimulation
         }
 
         /// <summary>The team players.</summary>
-        public ReadOnlyCollection<PointMass> Players => _players.AsReadOnly();
+        public ReadOnlyCollection<PointMass> Players => _players;
 
         /// <summary>The bounds of the goal.</summary>
         public RectangleF GoalBounds { get; }
