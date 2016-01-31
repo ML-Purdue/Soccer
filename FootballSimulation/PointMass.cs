@@ -83,11 +83,7 @@ namespace FootballSimulation
         ///     Invert the velocity and acceleration when a collision occurs
         /// </summary>
         internal void ResolveCollision(Vector2 normal)
-        {
-            // Check for collisions
-            // Get the normal of a wall
-            // Call that sweet reflect method
-        }
+            => Velocity = Vector2.Reflect(Velocity, normal);
 
         internal void Reset(Vector2 position)
         {
