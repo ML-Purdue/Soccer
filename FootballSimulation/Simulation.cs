@@ -18,6 +18,7 @@ namespace FootballSimulation
         private readonly IEnumerable<IEnumerable<Vector2>> _startingPositions;
         private readonly ReadOnlyCollection<Team> _teams;
 
+        private IEnumerable<ITeamStrategy> _teamStrategies;
         private SimulateState _simulate;
 
         /// <summary>
@@ -37,6 +38,7 @@ namespace FootballSimulation
             _simulate = SimulatePlaying;
             _teams = teams;
             _startingPositions = GetStartingPositions(teams);
+            _teamStrategies = GetTeamStrategies(teams);
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
@@ -68,6 +70,12 @@ namespace FootballSimulation
         private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(IEnumerable<Team> teams)
             => from t in teams select from p in t.Players select p.Position;
 
+        private static IEnumerable<ITeamStrategy> GetTeamStrategies(IEnumerable<Team> teams)
+            => from t in teams select t.Strategy;
+
+        private static IEnumerable<ITeamStrategy> SetTeamStrategies(IEnumerable<Team> teams, IEnumerable<ITeamStrategy> teamStrategies)
+            => teams.Zip(teamStrategies, (t, s) => t.Strategy = s);
+
         /// <summary>
         ///     Simulates one step of the football game.
         /// </summary>
@@ -80,6 +88,7 @@ namespace FootballSimulation
             _teams.ForEach(t => t.Simulate(time));
             _ball.SetForce(ResolveBallDirection(kicks));
             _ball.Simulate(time);
+            // TODO: Deal with the ball bouncing off players
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
@@ -92,25 +101,51 @@ namespace FootballSimulation
 
         private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
         {
-            // Don't forget to take into account collision with pitch boundaries.
-            throw new NotImplementedException();
+            // Deal with the kicks
+            var combinedKickForce = new Vector2(0);
+            kicks.ForEach(k => combinedKickForce += k.Force);
+            return combinedKickForce;
         }
 
         private void OnGoalScored(Team team)
         {
             team.OnGoalScored();
             GoalScored?.Invoke(this, team);
-            _teams.ForEach(t => t.Strategy = NullTeamStrategy.Instance); // TODO: Change to TeamResetStrategy.
+            _teamStrategies = GetTeamStrategies(_teams);
+            _teams.ForEach(t => t.Strategy = new ResetTeamStrategy());
             _simulate = SimulateResetting;
         }
 
         private void OnReset()
         {
-            _teams.ForEach(t => t.Strategy = NullTeamStrategy.Instance);
+            // restore old strategy
             _ball.Reset(_ballStartingPosition);
             _simulate = SimulatePlaying;
         }
 
         private delegate void SimulateState(float time);
+
+        private class ResetTeamStrategy : ITeamStrategy
+        {
+            private IEnumerable<Vector2> _startingPositions;
+
+            public ResetTeamStrategy(IEnumerable<Vector2> startingPositions)
+            {
+                _startingPositions = startingPositions;
+            }
+
+            public string Name => "Reset";
+
+            public Kick Execute(ISimulation simulation, Team team)
+            {
+                team.Players.Zip(_startingPositions, (p, s) =>
+                {
+                    p.SetForce(SteeringStrategies.Arrive(p.Position, s));
+                    return 0;
+                });
+                
+                return Kick.None;
+            }
+        }
     }
 }
