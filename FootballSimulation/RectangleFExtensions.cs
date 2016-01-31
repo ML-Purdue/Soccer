@@ -19,5 +19,17 @@ namespace FootballSimulation
         /// </returns>
         public static bool Contains(this RectangleF rectangle, Vector2 vector)
             => rectangle.Contains(vector.X, vector.Y);
+
+        /// <summary>
+        ///     Determines if the specified rectangle either intersects or borders this <see cref="RectangleF" /> structure.
+        /// </summary>
+        /// <param name="rectangle">The <see cref="RectangleF" /> to test.</param>
+        /// <param name="other">The other <see cref="RectangleF" /> to test.</param>
+        /// <returns>
+        ///     This method returns <c>true</c> if the rectangles intersect or border each other; otherwise <c>false</c>.
+        /// </returns>
+        public static bool IntersectsOrBorders(this RectangleF rectangle, RectangleF other)
+            => other.Left <= rectangle.Right && rectangle.Left <= other.Right &&
+               other.Top <= rectangle.Bottom && rectangle.Top <= other.Bottom;
     }
 }

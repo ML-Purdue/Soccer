@@ -88,8 +88,7 @@ namespace FootballSimulation
         /// <returns></returns>
         public bool IsValid(RectangleF pitchBounds)
             =>
-                // TODO: Must check for pitchBounds.ContainsOrBorders(team.GoalBounds)
-                pitchBounds.Contains(GoalBounds) &&
+                pitchBounds.IntersectsOrBorders(GoalBounds) &&
                 Players.All(p => pitchBounds.Contains(p.Position));
 
         internal void OnGoalScored() => GoalsScored++;

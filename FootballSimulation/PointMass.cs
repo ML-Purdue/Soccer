@@ -71,7 +71,7 @@ namespace FootballSimulation
         /// <summary>
         ///     Invert the velocity and acceleration when a collision occurs
         /// </summary>
-        internal void ResolveCollisions(Vector2 normal)
+        internal void ResolveCollision(Vector2 normal)
         {
             // Check for collisions
             // Get the normal of a wall

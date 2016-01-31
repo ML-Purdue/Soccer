@@ -125,6 +125,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollisionMath.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IPointMass.cs" />
     <Compile Include="ISimulation.cs" />

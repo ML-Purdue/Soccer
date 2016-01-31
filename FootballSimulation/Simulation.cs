@@ -74,7 +74,8 @@ namespace FootballSimulation
             _teams.ForEach(t => t.Simulate(time));
             _ball.SetForce(ResolveBallDirection(kicks));
             _ball.Simulate(time);
-            // TODO: Deal with the ball bouncing off players
+            var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
+            if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
