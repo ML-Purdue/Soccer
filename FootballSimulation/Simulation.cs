@@ -53,8 +53,8 @@ namespace FootballSimulation
 
         /// <summary>The pitch boundaries.</summary>
         public RectangleF PitchBounds { get; }
-
-        private static bool IsTeamValid(Team team, RectangleF pitchBounds)
+        
+        public static bool IsTeamValid(Team team, RectangleF pitchBounds)
             =>
                 // TODO: Must check for pitchBounds.ContainsOrBorders(team.GoalBounds)
                 team != null && pitchBounds.Contains(team.GoalBounds) &&
