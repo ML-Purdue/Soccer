@@ -72,9 +72,7 @@ namespace FootballSimulation
         {
             var kicks = from team in _teams select team.ExecuteStrategy(this);
             _teams.ForEach(t => t.Simulate(time));
-            _ball.Simulate(ResolveBallDirection(kicks), time);
-            var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
-            if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
+            SimulateBall(time, kicks);
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
@@ -86,6 +84,13 @@ namespace FootballSimulation
                 p.Simulate(SteeringStrategies.Arrive(p.Position, q), time);
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();
+        }
+
+        private void SimulateBall(float time, IEnumerable<Kick> kicks)
+        {
+            _ball.Simulate(ResolveBallDirection(kicks), time);
+            var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
+            if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
         }
 
         private void OnGoalScored(Team team)
