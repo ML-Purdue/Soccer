@@ -31,12 +31,12 @@ namespace FootballSimulation
             Contract.Requires<ArgumentNullException>(teams != null);
             Contract.Requires<ArgumentNullException>(ball != null);
             Contract.Requires<ArgumentException>(pitchBounds.Width > 0 && pitchBounds.Height > 0);
-            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => IsTeamValid(t, pitchBounds)));
+            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => t != null && t.IsValid(pitchBounds)));
             Contract.Requires<ArgumentException>(pitchBounds.Contains(ball.Position));
 
             _simulate = SimulatePlaying;
             _teams = teams;
-            _startingPositions = GetPositions(teams);
+            _startingPositions = from t in teams select t.PlayerPositions;
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
@@ -53,21 +53,20 @@ namespace FootballSimulation
 
         /// <summary>The pitch boundaries.</summary>
         public RectangleF PitchBounds { get; }
-        
-        public static bool IsTeamValid(Team team, RectangleF pitchBounds)
-            =>
-                // TODO: Must check for pitchBounds.ContainsOrBorders(team.GoalBounds)
-                team != null && pitchBounds.Contains(team.GoalBounds) &&
-                team.Players.All(p => pitchBounds.Contains(p.Position));
-
-        private static IEnumerable<IEnumerable<Vector2>> GetPositions(IEnumerable<Team> teams)
-            => from t in teams select from p in t.Players select p.Position;
 
         /// <summary>
         ///     Simulates one step of the football game.
         /// </summary>
         /// <param name="time">The time step length.</param>
         public void Simulate(float time) => _simulate(time);
+
+        private static Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
+        {
+            // Deal with the kicks
+            var combinedKickForce = Vector2.Zero;
+            kicks.ForEach(k => combinedKickForce += k.Force);
+            return combinedKickForce;
+        }
 
         private void SimulatePlaying(float time)
         {
@@ -86,18 +85,10 @@ namespace FootballSimulation
                 // Move the player towards the destination.
                 p.SetForce(SteeringStrategies.Arrive(p.Position, q));
                 p.Simulate(time);
-                
+
                 // Check if the direction was reached.
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();
-        }
-
-        private static Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
-        {
-            // Deal with the kicks
-            var combinedKickForce = Vector2.Zero;
-            kicks.ForEach(k => combinedKickForce += k.Force);
-            return combinedKickForce;
         }
 
         private void OnGoalScored(Team team)

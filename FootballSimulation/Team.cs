@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 
 namespace FootballSimulation
 {
@@ -11,7 +13,6 @@ namespace FootballSimulation
     /// </summary>
     public sealed class Team : ITeam
     {
-        private readonly ReadOnlyCollection<PointMass> _players;
         private ITeamStrategy _strategy;
 
         /// <summary>
@@ -28,9 +29,15 @@ namespace FootballSimulation
             Contract.Requires<ArgumentException>(goalBounds.Width > 0 && goalBounds.Height > 0);
 
             _strategy = strategy;
-            _players = players;
+            Players = players;
             GoalBounds = goalBounds;
         }
+
+        /// <summary>The team players.</summary>
+        public ReadOnlyCollection<PointMass> Players { get; }
+
+        /// <summary>The player positions.</summary>
+        public IEnumerable<Vector2> PlayerPositions => from p in Players select p.Position;
 
         /// <summary>The team strategy.</summary>
         public ITeamStrategy Strategy
@@ -45,10 +52,7 @@ namespace FootballSimulation
         }
 
         /// <summary>The team players.</summary>
-        ReadOnlyCollection<IPointMass> ITeam.Players => _players.ToList<IPointMass>().AsReadOnly();
-
-        /// <summary>The team players.</summary>
-        public ReadOnlyCollection<PointMass> Players => _players; 
+        ReadOnlyCollection<IPointMass> ITeam.Players => Players.ToList<IPointMass>().AsReadOnly();
 
         /// <summary>The bounds of the goal.</summary>
         public RectangleF GoalBounds { get; }
@@ -56,7 +60,9 @@ namespace FootballSimulation
         /// <summary>The total number of goals scored.</summary>
         public int GoalsScored { get; private set; }
 
-        /// <summary>Executes the team strategy.</summary>
+        /// <summary>
+        ///     Executes the team strategy.
+        /// </summary>
         /// <param name="simulation">The simulation in which the is taking part.</param>
         /// <returns>The kick.</returns>
         public Kick ExecuteStrategy(ISimulation simulation)
@@ -74,12 +80,22 @@ namespace FootballSimulation
         ///     Simulates the team for a specified time period and updates the positions and velocities of the team players.
         /// </summary>
         /// <param name="time">The time period.</param>
-        public void Simulate(float time) => _players.ForEach(p => p.Simulate(time));
+        public void Simulate(float time) => Players.ForEach(p => p.Simulate(time));
+
+        /// <summary>
+        /// </summary>
+        /// <param name="pitchBounds"></param>
+        /// <returns></returns>
+        public bool IsValid(RectangleF pitchBounds)
+            =>
+                // TODO: Must check for pitchBounds.ContainsOrBorders(team.GoalBounds)
+                pitchBounds.Contains(GoalBounds) &&
+                Players.All(p => pitchBounds.Contains(p.Position));
 
         internal void OnGoalScored() => GoalsScored++;
 
         private bool IsKickValid(IPointMass player, ISimulation simulation) =>
-            _players.Any(p => p == player) &&
+            Players.Any(p => p == player) &&
             (player.Position - simulation.Ball.Position).Length() < player.Radius + simulation.Ball.Radius;
     }
 }
