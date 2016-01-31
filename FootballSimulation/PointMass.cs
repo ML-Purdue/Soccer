@@ -79,11 +79,12 @@ namespace FootballSimulation
             Simulate(time);
         }
 
-        /// <summary>
-        ///     Invert the velocity and acceleration when a collision occurs
-        /// </summary>
+        // Invert the velocity and acceleration when a collision occurs
         internal void ResolveCollision(Vector2 normal)
-            => Velocity = Vector2.Reflect(Velocity, normal);
+        {
+            Velocity = Vector2.Reflect(Velocity, normal);
+            // SetForce(???);
+        }
 
         internal void Reset(Vector2 position)
         {
