@@ -66,17 +66,12 @@ namespace FootballSimulation
         /// </summary>
         /// <param name="time">The time period over which the position and velocity should be integrated.</param>
         public void Simulate(float time)
-        {
-            var newVelocity = (Velocity + Acceleration * time).ClampMagnitude(MaxSpeed);
-            var newPosition = Position + Velocity * time + Vector2.Multiply(Convert.ToSingle(.5), Acceleration) * time * time;
-            Velocity = newVelocity;
-            Position = newPosition;
-        }
+            => Position += (Velocity = (Velocity + Acceleration * time).ClampMagnitude(MaxSpeed)) * time;
 
         /// <summary>
         ///     Invert the velocity and acceleration when a collision occurs
         /// </summary>
-        internal void ResolveCollisions()
+        internal void ResolveCollisions(Vector2 normal)
         {
             // Check for collisions
             // Get the normal of a wall

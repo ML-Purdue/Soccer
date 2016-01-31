@@ -36,7 +36,7 @@ namespace FootballSimulation
 
             _simulate = SimulatePlaying;
             _teams = teams;
-            _startingPositions = GetStartingPositions(teams);
+            _startingPositions = GetPositions(teams);
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
@@ -60,7 +60,7 @@ namespace FootballSimulation
                 team != null && pitchBounds.Contains(team.GoalBounds) &&
                 team.Players.All(p => pitchBounds.Contains(p.Position));
 
-        private static IEnumerable<IEnumerable<Vector2>> GetStartingPositions(IEnumerable<Team> teams)
+        private static IEnumerable<IEnumerable<Vector2>> GetPositions(IEnumerable<Team> teams)
             => from t in teams select from p in t.Players select p.Position;
 
         /// <summary>
@@ -83,16 +83,19 @@ namespace FootballSimulation
         {
             if (_teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (p, q) =>
             {
+                // Move the player towards the destination.
                 p.SetForce(SteeringStrategies.Arrive(p.Position, q));
                 p.Simulate(time);
+                
+                // Check if the direction was reached.
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();
         }
 
-        private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
+        private static Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
         {
             // Deal with the kicks
-            var combinedKickForce = new Vector2(0);
+            var combinedKickForce = Vector2.Zero;
             kicks.ForEach(k => combinedKickForce += k.Force);
             return combinedKickForce;
         }
@@ -106,7 +109,6 @@ namespace FootballSimulation
 
         private void OnReset()
         {
-            // restore old strategy
             _ball.Reset(_ballStartingPosition);
             _simulate = SimulatePlaying;
         }
