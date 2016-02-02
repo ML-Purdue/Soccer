@@ -63,13 +63,6 @@ namespace FootballSimulation
         /// <param name="time">The time step length.</param>
         public void Simulate(float time) => _simulate(time);
 
-        private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
-        {
-            var totalKickForce = Vector2.Zero;
-            kicks.ForEach(k => totalKickForce += k.Force);
-            return totalKickForce + _ball.GetFriction(Friction);
-        }
-
         private void SimulatePlaying(float time)
         {
             var kicks = from team in _teams select team.ExecuteStrategy(this);
@@ -82,7 +75,6 @@ namespace FootballSimulation
         {
             if (_teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (p, q) =>
             {
-                // Move the player towards the destination and until it is reached.
                 p.Simulate(SteeringStrategies.Arrive(p.Position, q), time);
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();
@@ -93,6 +85,13 @@ namespace FootballSimulation
             _ball.Simulate(ResolveBallDirection(kicks), time);
             var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
             if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
+        }
+
+        private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
+        {
+            var totalKickForce = Vector2.Zero;
+            kicks.ForEach(k => totalKickForce += k.Force);
+            return totalKickForce + _ball.GetFriction(Friction);
         }
 
         private void OnGoalScored(Team team)
