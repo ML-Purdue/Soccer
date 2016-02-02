@@ -61,31 +61,20 @@ namespace FootballSimulation
         /// <param name="value">The force to be excerted on the point mass.</param>
         public void SetForce(Vector2 value) => Acceleration = value.ClampMagnitude(MaxForce)/Mass;
 
-        /// <summary>
-        ///     Simulates the point mass for a specified period of time and updates the position and the velocity.
-        /// </summary>
-        /// <param name="time">The time period over which the position and velocity should be integrated.</param>
-        public void Simulate(float time)
-            => Position += (Velocity = (Velocity + Acceleration * time).ClampMagnitude(MaxSpeed)) * time;
+        internal void Simulate(float time)
+        {
+            Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
+            Acceleration = Vector2.Zero;
+        }
 
-        /// <summary>
-        ///     Sets the force and simulates the point mass.
-        /// </summary>
-        /// <param name="force">The force to be excerted on the point mass.</param>
-        /// <param name="time">The time period over which the position and velocity should be integrated.</param>
-        public void Simulate(Vector2 force, float time)
+        internal void Simulate(Vector2 force, float time)
         {
             SetForce(force);
             Simulate(time);
         }
 
-        // Invert the velocity and acceleration when a collision occurs
-        internal void ResolveCollision(Vector2 normal)
-        {
-            Velocity = Vector2.Reflect(Velocity, normal);
-            // SetForce(???);
-        }
-
+        internal void ResolveCollision(Vector2 normal) => Velocity = Vector2.Reflect(Velocity, normal);
+        
         internal void Reset(Vector2 position)
         {
             Position = position;
