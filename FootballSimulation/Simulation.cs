@@ -44,10 +44,7 @@ namespace FootballSimulation
             PitchBounds = pitchBounds;
             Friction = friction;
         }
-
-        /// <summary>Called when a goal is scored.</summary>
-        public EventHandler<Team> GoalScored { get; set; }
-
+        
         /// <summary>The teams playing against one another.</summary>
         public ReadOnlyCollection<ITeam> Teams => _teams.ToList<ITeam>().AsReadOnly();
 
@@ -101,7 +98,6 @@ namespace FootballSimulation
         private void OnGoalScored(Team team)
         {
             team.OnGoalScored();
-            GoalScored?.Invoke(this, team);
             _simulate = SimulateResetting;
         }
 
