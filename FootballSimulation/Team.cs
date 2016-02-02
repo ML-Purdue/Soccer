@@ -82,11 +82,7 @@ namespace FootballSimulation
         /// <param name="time">The time period.</param>
         public void Simulate(float time) => Players.ForEach(p => p.Simulate(time));
 
-        /// <summary>
-        /// </summary>
-        /// <param name="pitchBounds"></param>
-        /// <returns></returns>
-        public bool IsValid(RectangleF pitchBounds)
+        internal bool IsValid(RectangleF pitchBounds)
             =>
                 pitchBounds.IntersectsOrBorders(GoalBounds) &&
                 Players.All(p => pitchBounds.Contains(p.Position));
