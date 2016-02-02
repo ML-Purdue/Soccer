@@ -10,8 +10,8 @@ namespace FootballSimulation
     public sealed class PointMass : IPointMass
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PointMass" /> class with the specified initial values for the position
-        ///     and velocity.
+        ///     Initializes a new instance of the <see cref="PointMass" /> class with the specified
+        ///     initial values for the position and velocity.
         /// </summary>
         /// <param name="mass">The mass.</param>
         /// <param name="radius">The radius used for collision checking.</param>
@@ -61,6 +61,18 @@ namespace FootballSimulation
         /// <param name="value">The force to be excerted on the point mass.</param>
         public void SetForce(Vector2 value) => Acceleration = value.ClampMagnitude(MaxForce)/Mass;
 
+        /// <summary>
+        ///     Calculate the friction force given the friction coefficient between the point mass
+        ///     and the medium in which the point mass is moving.
+        /// </summary>
+        /// <param name="friction">The friction coefficient.</param>
+        /// <returns>A vector opposite to the direction of motion representing the friction force.</returns>
+        public Vector2 GetFriction(float friction)
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(friction >= 0);
+            return -Vector2.Normalize(Velocity)*Mass*friction;
+        }
+
         internal void Simulate(float time)
         {
             Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
@@ -74,7 +86,7 @@ namespace FootballSimulation
         }
 
         internal void ResolveCollision(Vector2 normal) => Velocity = Vector2.Reflect(Velocity, normal);
-        
+
         internal void Reset(Vector2 position)
         {
             Position = position;

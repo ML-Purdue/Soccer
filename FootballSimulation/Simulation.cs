@@ -26,10 +26,12 @@ namespace FootballSimulation
         /// <param name="teams">The teams to be played against each other.</param>
         /// <param name="ball">The ball.</param>
         /// <param name="pitchBounds">The pitch boundaries.</param>
-        public Simulation(ReadOnlyCollection<Team> teams, PointMass ball, RectangleF pitchBounds)
+        /// <param name="friction">The friction coefficient.</param>
+        public Simulation(ReadOnlyCollection<Team> teams, PointMass ball, RectangleF pitchBounds, float friction)
         {
             Contract.Requires<ArgumentNullException>(teams != null);
             Contract.Requires<ArgumentNullException>(ball != null);
+            Contract.Requires<ArgumentException>(friction >= 0);
             Contract.Requires<ArgumentException>(pitchBounds.Width > 0 && pitchBounds.Height > 0);
             Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => t != null && t.IsValid(pitchBounds)));
             Contract.Requires<ArgumentException>(pitchBounds.Contains(ball.Position));
@@ -40,6 +42,7 @@ namespace FootballSimulation
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
+            Friction = friction;
         }
 
         /// <summary>Called when a goal is scored.</summary>
@@ -54,18 +57,20 @@ namespace FootballSimulation
         /// <summary>The pitch boundaries.</summary>
         public RectangleF PitchBounds { get; }
 
+        /// <summary>The friction </summary>
+        public float Friction { get; }
+
         /// <summary>
         ///     Simulates one step of the football game.
         /// </summary>
         /// <param name="time">The time step length.</param>
         public void Simulate(float time) => _simulate(time);
 
-        private static Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
+        private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
         {
-            // Deal with the kicks
-            var combinedKickForce = Vector2.Zero;
-            kicks.ForEach(k => combinedKickForce += k.Force);
-            return combinedKickForce;
+            var totalKickForce = Vector2.Zero;
+            kicks.ForEach(k => totalKickForce += k.Force);
+            return totalKickForce + _ball.GetFriction(Friction);
         }
 
         private void SimulatePlaying(float time)
