@@ -70,7 +70,7 @@ namespace FootballSimulation
         public Vector2 GetFriction(float friction)
         {
             Contract.Requires<ArgumentOutOfRangeException>(friction >= 0);
-            return -Vector2.Normalize(Velocity)*Mass*friction;
+            return Velocity.LengthSquared() != 0 ? -Vector2.Normalize(Velocity) * Mass * friction : Vector2.Zero;
         }
 
         internal void Simulate(float time)
