@@ -21,7 +21,7 @@ namespace FootballSimulation
             if (contact.Y < rectangle.Top) contact.Y = rectangle.Top;
             if (contact.Y > rectangle.Bottom) contact.Y = rectangle.Bottom;
 
-            var v = new Vector2(center.X - contact.X, center.Y - contact.Y);
+            var v = new Vector2(contact.X - center.X, contact.Y - center.Y);
             var length = v.Length();
 
             return length > 0 && length < radius

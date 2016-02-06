@@ -75,7 +75,7 @@ namespace FootballSimulation
 
         internal void Simulate(float time)
         {
-            Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
+            Position += (Velocity = (Velocity + Acceleration * time).ClampMagnitude(MaxSpeed)) * time; // For x = x0 + v0 + .5at^2 use this: - Vector2.Multiply(Convert.ToSingle(.5), Acceleration) * time * time;
             Acceleration = Vector2.Zero;
         }
 
