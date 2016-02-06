@@ -70,6 +70,7 @@ namespace FootballSimulation
         public Vector2 GetFriction(float friction)
         {
             Contract.Requires<ArgumentOutOfRangeException>(friction >= 0);
+            // The -1 * Normalize(Velocity) is to make the force of friction point opposite to the direction of the velocity
             return -Vector2.Normalize(Velocity)*Mass*friction;
         }
 
