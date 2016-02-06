@@ -55,11 +55,40 @@ namespace FootballSimulation
 
         /// <summary>
         /// Move toward a target's future position.
+        /// This method assumes the player will move at their maximum speed.  It also ignores friction on the target.
         /// </summary>
         /// <param name="position"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static Vector2 Pursue(PointMass player, PointMass target) => Vector2.Zero;
+        public static Vector2 Pursue(PointMass player, PointMass target)
+        {
+            // Calculate the time till intersection.
+            // We want to move the perpendicular distance between the player and the target in the same amount of time to move the parallel distance to the estimated intersection point.
+            // Formulas:
+            //     t = perpDist / Vy
+            //     Vx * t = initialParallelDist + Ball.ParallelVelocity * t         (ignores friction)
+            //       => Vx * perpDist / Vy = initialParallelDist + Ball.ParallelVelocity * perpDist / Vy
+            //       => Vx * perpDist = initialParallelDist * Vy + Ball.ParallelVelocity * perpDist
+            //       => Vx = initialParallelDist * Vy / perpDist + Ball.ParallelVelocity
+            //     player.MaxSpeed ^2 = Vx^2 + Vy^2
+            //       => player.MaxSpeed ^2 = (initialParallelDist * Vy / perpDist + Ball.ParallelVelocity)^2 + Vy^2
+            //       => lolno (keep these equations for future reference)
+
+            //     We can solve for Vy/Vx together, this is equal to tan(theta)
+            //     The above boils down to:
+            //     (1/Ball.ParallelVelocity)^2  = (initialParallelDist/(perpDist*Ball.ParallelVelocity))^2 * t^2 - 2*initialParallelDist/(perpDist * Ball.ParallelVelocity^2) = 1/maxSpeed^2 + t^2/maxSpeed^2
+            //              NOTE t is not time, it is Vy/Vx
+            //        Just solve this for t
+            //          https://www.wolframalpha.com/input/?i=t%5E2(d%5E2%2F(y%5E2*b%5E2)+-+1%2Fm%5E2)+-+2*d*t%2F(y*b%5E2)+%2B+1%2Fb%5E2+-+1%2Fm%5E2+%3D+0+solve+for+t
+
+            //      => t = (sqrt(b^2 y^2 (y^2 (m^2-b^2)+d^2 m^2))+d m^2 y)/(d^2 m^2-b^2 y^2) if d^2 m^2!=b^2 y^2
+            //      => t = (sqrt(b^2 y^2 (y^2 (m^2-b^2)+d^2 m^2))-d m^2 y)/(b^2 y^2-d^2 m^2) if d^2 m^2!=b^2 y^2
+            //          NOTE t is not time, it is Vy/Vx
+            // The final angle we want to travel towards is:
+            // tan-1(t)
+
+
+        }
 
         /// <summary>
         /// Move away from a target's future position.
