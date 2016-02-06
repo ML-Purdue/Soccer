@@ -71,7 +71,7 @@ namespace FootballSimulation
             Contract.Requires<ArgumentException>(Contract.Exists(simulation.Teams, t => t == this));
 
             var kick = _strategy.Execute(simulation, this);
-            if (!IsKickValid(kick.Player, simulation))
+            if (kick.Player != null && !IsKickValid(kick.Player, simulation))
                 throw new InvalidOperationException("Invalid kick.");
             return kick;
         }
