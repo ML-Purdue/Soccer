@@ -87,7 +87,7 @@ namespace FootballSimulation
             // The final angle we want to travel towards is:
             // tan-1(t)
 
-
+            return Vector2.Zero;
         }
 
         /// <summary>
