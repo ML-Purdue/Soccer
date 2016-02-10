@@ -67,6 +67,7 @@ namespace FootballSimulation
         /// </summary>
         /// <param name="frictionCoefficient">The friction coefficient.</param>
         /// <returns>A vector opposite to the direction of motion representing the friction force.</returns>
+        [Pure]
         public Vector2 GetFriction(float frictionCoefficient)
         {
             Contract.Requires<ArgumentException>(frictionCoefficient >= 0);

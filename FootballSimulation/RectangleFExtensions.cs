@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Numerics;
 
 namespace FootballSimulation
@@ -17,6 +18,7 @@ namespace FootballSimulation
         ///     This method returns <c>true</c> if the point is contained within this <see cref="RectangleF" /> structure;
         ///     otherwise <c>false</c>.
         /// </returns>
+        [Pure]
         public static bool Contains(this RectangleF rectangle, Vector2 vector)
             => rectangle.Contains(vector.X, vector.Y);
 
@@ -28,6 +30,7 @@ namespace FootballSimulation
         /// <returns>
         ///     This method returns <c>true</c> if the rectangles intersect or border each other; otherwise <c>false</c>.
         /// </returns>
+        [Pure]
         public static bool IntersectsOrBorders(this RectangleF rectangle, RectangleF other)
             => other.Left <= rectangle.Right && rectangle.Left <= other.Right &&
                other.Top <= rectangle.Bottom && rectangle.Top <= other.Bottom;

@@ -88,6 +88,7 @@ namespace FootballSimulation
         /// </summary>
         /// <param name="pitchBounds">The pitch boundaries that must contain the players and at least intersect the goal bounds.</param>
         /// <returns><c>True</c> if the team is valid; otherwise, <c>false</c>.</returns>
+        [Pure]
         public bool IsValid(RectangleF pitchBounds)
             =>
                 pitchBounds.IntersectsOrBorders(GoalBounds) &&
