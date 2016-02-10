@@ -63,30 +63,37 @@ namespace FootballSimulation
         /// <param name="time">The time step length.</param>
         public void Simulate(float time) => _simulate(time);
 
+        // Execute the strategies and simulate the teams and ball.
         private void SimulatePlaying(float time)
         {
             var kicks = from team in _teams select team.ExecuteStrategy(this);
             _teams.ForEach(t => t.Simulate(time));
             SimulateBall(time, kicks);
-            _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
+        // Moves the players of both teams back to their starting positions.
         private void SimulateResetting(float time)
         {
             if (_teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (p, q) =>
             {
-                p.Simulate(SteeringStrategies.Arrive(p.Position, q), time);
+                p.SetForce(SteeringStrategies.Arrive(p.Position, q));
+                p.Simulate(time);
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();
         }
 
+        // Updates the ball's position and velocity. Also handles collisions and goals.
         private void SimulateBall(float time, IEnumerable<Kick> kicks)
         {
-            _ball.Simulate(ResolveBallDirection(kicks), time);
+            _ball.SetForce(ResolveBallDirection(kicks));
+            _ball.Simulate(time);
             var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
             if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
+            _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
+        // Determines the ball's direction after it is kicked.
+        // TODO: Need to take the players' orientations relative to their velocities into account.
         private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
         {
             var totalKickForce = Vector2.Zero;
@@ -94,12 +101,14 @@ namespace FootballSimulation
             return totalKickForce + _ball.GetFriction(Friction);
         }
 
-        private void OnGoalScored(Team team)
+        // Called when a goal is scored.
+        private void OnGoalScored(Team scoringTeam)
         {
-            team.OnGoalScored();
+            scoringTeam.OnGoalScored();
             _simulate = SimulateResetting;
         }
 
+        // Called when the team's have reached their starting positions after executing a reset.
         private void OnReset()
         {
             _ball.Reset(_ballStartingPosition);

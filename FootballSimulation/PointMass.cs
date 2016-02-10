@@ -89,12 +89,7 @@ namespace FootballSimulation
             Acceleration = Vector2.Zero;
         }
 
-        internal void Simulate(Vector2 force, float time)
-        {
-            SetForce(force);
-            Simulate(time);
-        }
-
+        // TODO: May need to adjust position.
         internal void ResolveCollision(Vector2 normal) => Velocity = Vector2.Reflect(Velocity, normal);
 
         internal void Reset(Vector2 position)
