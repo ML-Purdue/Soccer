@@ -69,7 +69,7 @@ namespace FootballSimulation
         /// <returns>A vector opposite to the direction of motion representing the friction force.</returns>
         public Vector2 GetFriction(float frictionCoefficient)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(frictionCoefficient >= 0);
+            Contract.Requires<ArgumentException>(frictionCoefficient >= 0);
 
             var ls = Velocity.LengthSquared();
             var invNorm = 1/(float) Math.Sqrt(ls);
