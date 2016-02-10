@@ -16,5 +16,8 @@ namespace FootballSimulation
 
         /// <summary>The pitch boundaries.</summary>
         RectangleF PitchBounds { get; }
+
+        /// <summary>The friction between the pitch and the ball.</summary>
+        float Friction { get; }
     }
 }
