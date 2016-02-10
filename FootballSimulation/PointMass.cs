@@ -78,7 +78,7 @@ namespace FootballSimulation
                 // The friction force magnitude is calculated as frictionCoefficient*Mass*Gravity
                 // where Gravity=1 and is directed opposite to the direction of motion.
                 ? -Velocity*invNorm*frictionCoefficient*Mass
-                // If the velocity is sufficiently small, approximate the frictionCoefficient to be zero.
+                // If the velocity is sufficiently small, approximate the friction force to be zero.
                 : Vector2.Zero;
         }
 
