@@ -62,20 +62,30 @@ namespace FootballSimulation
         public void SetForce(Vector2 value) => Acceleration = value.ClampMagnitude(MaxForce)/Mass;
 
         /// <summary>
-        ///     Calculate the friction force given the friction coefficient between the point mass
+        ///     Calculate the frictionCoefficient force given the friction coefficient between the point mass
         ///     and the medium in which the point mass is moving.
         /// </summary>
-        /// <param name="friction">The friction coefficient.</param>
+        /// <param name="frictionCoefficient">The friction coefficient.</param>
         /// <returns>A vector opposite to the direction of motion representing the friction force.</returns>
-        public Vector2 GetFriction(float friction)
+        public Vector2 GetFriction(float frictionCoefficient)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(friction >= 0);
-            return Velocity.LengthSquared() != 0 ? -Vector2.Normalize(Velocity) * Mass * friction : Vector2.Zero;
+            Contract.Requires<ArgumentOutOfRangeException>(frictionCoefficient >= 0);
+
+            var ls = Velocity.LengthSquared();
+            var invNorm = 1/(float) Math.Sqrt(ls);
+
+            return !float.IsInfinity(invNorm)
+                // The friction force magnitude is calculated as frictionCoefficient*Mass*Gravity
+                // where Gravity=1 and is directed opposite to the direction of motion.
+                ? -Velocity*invNorm*frictionCoefficient*Mass
+                // If the velocity is sufficiently small, approximate the frictionCoefficient to be zero.
+                : Vector2.Zero;
         }
 
         internal void Simulate(float time)
         {
-            Position += (Velocity = (Velocity + Acceleration * time).ClampMagnitude(MaxSpeed)) * time; // For x = x0 + v0 + .5at^2 use this: - Vector2.Multiply(Convert.ToSingle(.5), Acceleration) * time * time;
+            Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
+                // For x = x0 + v0 + .5at^2 use this: - Vector2.Multiply(Convert.ToSingle(.5), Acceleration) * time * time;
             Acceleration = Vector2.Zero;
         }
 
