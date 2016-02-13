@@ -106,7 +106,20 @@ namespace FootballSimulation
             // The final angle we want to travel towards is:
             // tan-1(t)
 
-            return Vector2.Zero;
+            double initial_Distance = Vector2.Distance(player.Position, target.Position);
+            Vector2 initial_Vector = target.Position - player.Position;
+            double cos_angle_Distance_xAxis = Vector2.Dot(initial_Vector, Vector2.UnitX)/initial_Distance;
+            double angle_Distance_xAxis = Math.Acos(cos_angle_Distance_xAxis);
+            double cos_angle_targetVector_xAxis = Vector2.Dot(target.Velocity, Vector2.UnitX) / target.Velocity.Length();
+            double angle_targetVector_xAxis = Math.Acos(cos_angle_targetVector_xAxis);
+            double angle = angle_Distance_xAxis - angle_targetVector_xAxis;
+            double initial_Parellel_Distance = initial_Distance * Math.Cos(angle);
+            double initial_Perpendicular_Distance = initial_Distance * Math.Sin(angle);
+            double t = (initial_Parellel_Distance * Math.Pow((player.MaxSpeed), 2) * initial_Perpendicular_Distance + Math.Sqrt(Math.Pow(target.Velocity.Length(), 2) * Math.Pow(initial_Perpendicular_Distance, 2) * (Math.Pow(initial_Perpendicular_Distance, 2) * ((Math.Pow(player.MaxSpeed, 2)) - Math.Pow(target.Velocity.Length(), 2)) + Math.Pow(initial_Parellel_Distance, 2) * Math.Pow(player.MaxSpeed, 2)) / ((Math.Pow(initial_Parellel_Distance, 2)) * Math.Pow(player.MaxSpeed, 2) - Math.Pow(target.Velocity.Length(), 2) * Math.Pow(initial_Perpendicular_Distance, 2))));
+            double pursue_Angle = Math.Atan(t);
+            double angle_xAxis = pursue_Angle + angle_targetVector_xAxis;
+            Vector2 pursue = new Vector2((float)Math.Cos(angle_xAxis), (float)Math.Sin(angle_xAxis)) * player.MaxSpeed;
+            return pursue;
         }
 
         /// <summary>
