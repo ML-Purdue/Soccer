@@ -77,7 +77,7 @@ namespace FootballSimulation
             if (_teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (p, q) =>
             {
                 var slowingRadius = 10;
-                p.SetForce(SteeringStrategies.Arrive(p, q, slowingRadius));
+                p.SetForce(SteeringStrategies.Arrive(p, q, p.MaxSpeed, slowingRadius));
                 p.Simulate(time);
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();

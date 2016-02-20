@@ -15,7 +15,7 @@ namespace FootballSimulation
         /// <param name="position"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static Vector2 Arrive(PointMass player, Vector2 target, float slowingRadius)
+        public static Vector2 Arrive(PointMass player, Vector2 target, float maxSpeed, float slowingRadius)
         {
             /*
                 target_offset = target - position
@@ -27,8 +27,8 @@ namespace FootballSimulation
             */
             var targetOffset = target - player.Position;
             var distance = targetOffset.Length();
-            var rampedSpeed = player.MaxSpeed * (distance / slowingRadius);
-            var clippedSpeed = Math.Min(rampedSpeed, player.MaxSpeed);
+            var rampedSpeed = maxSpeed * (distance / slowingRadius);
+            var clippedSpeed = Math.Min(rampedSpeed, maxSpeed);
             var desiredVelocity = (clippedSpeed / distance) * targetOffset;
 
             return desiredVelocity - player.Velocity;
@@ -42,10 +42,7 @@ namespace FootballSimulation
         /// <param name="desiredSpeed"></param>
         /// <returns></returns>
         public static Vector2 Seek(PointMass player, Vector2 target, float desiredSpeed)
-        {
-            var desiredVelocity = Vector2.Normalize(player.Position - target).ClampMagnitude(desiredSpeed);
-            return desiredVelocity - player.Velocity;
-        }
+            => Vector2.Normalize(target - player.Position) * desiredSpeed - player.Velocity;
 
         /// <summary>
         /// </summary>
