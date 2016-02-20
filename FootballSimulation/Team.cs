@@ -96,8 +96,9 @@ namespace FootballSimulation
 
         internal void OnGoalScored() => GoalsScored++;
 
+        // TODO: Fix kick validation...
         private bool IsKickValid(IPointMass player, ISimulation simulation) =>
-            Players.Any(p => p == player) &&
-            (player.Position - simulation.Ball.Position).Length() < player.Radius + simulation.Ball.Radius;
+            Players.Any(p => p == player);// &&
+            //(player.Position - simulation.Ball.Position).Length() < player.Radius + simulation.Ball.Radius;
     }
 }
