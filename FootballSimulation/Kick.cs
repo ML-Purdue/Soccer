@@ -27,7 +27,7 @@ namespace FootballSimulation
         {
             Contract.Requires<ArgumentNullException>(player != null);
             Player = player;
-            Force = Vector2.Zero;
+            Force = force;
         }
     }
 }
