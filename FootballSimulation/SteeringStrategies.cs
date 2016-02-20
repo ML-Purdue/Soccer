@@ -15,7 +15,7 @@ namespace FootballSimulation
         /// <param name="position"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static Vector2 Arrive(Vector2 position, Vector2 target)
+        public static Vector2 Arrive(PointMass player, Vector2 target, float slowingRadius)
         {
             /*
                 target_offset = target - position
@@ -25,8 +25,13 @@ namespace FootballSimulation
                 desired_velocity = (clipped_speed / distance) * target_offset
                 steering = desired_velocity - velocity
             */
+            var targetOffset = target - player.Position;
+            var distance = targetOffset.Length();
+            var rampedSpeed = player.MaxSpeed * (distance / slowingRadius);
+            var clippedSpeed = Math.Min(rampedSpeed, player.MaxSpeed);
+            var desiredVelocity = (clippedSpeed / distance) * targetOffset;
 
-            return Vector2.Zero;
+            return desiredVelocity - player.Velocity;
         }
 
         /// <summary>
@@ -59,10 +64,7 @@ namespace FootballSimulation
         /// <param name="desiredSpeed"></param>
         /// <returns></returns>
         public static Vector2 Flee(PointMass player, Vector2 target, float desiredSpeed)
-        {
-            var desiredVelocity = Vector2.Normalize(target - player.Position).ClampMagnitude(desiredSpeed);
-            return desiredVelocity - player.Velocity;
-        }
+            => -1 * Seek(player, target, desiredSpeed);
 
         /// <summary>
         /// </summary>
@@ -120,8 +122,12 @@ namespace FootballSimulation
             double pursue_Angle = Math.Atan(t);
             double angle_xAxis = pursue_Angle + angle_targetVector_xAxis;
             Vector2 pursue = new Vector2((float)Math.Cos(angle_xAxis), (float)Math.Sin(angle_xAxis)) * player.MaxSpeed;
-            return pursue;
+            return pursue - player.Velocity; // This '- player.Velocity' is technically incorrect as the above assumes the player is at rest initially.  If major issues arise, remove this.
+                                             // If things still don't work, redo the math.
         }
+
+        public static Vector2 PursueNormalized(PointMass player, PointMass target)
+            => Vector2.Normalize(Pursue(player, target));
 
         /// <summary>
         ///     Move away from a target's future position.
@@ -129,6 +135,10 @@ namespace FootballSimulation
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static Vector2 Evade(PointMass player, PointMass target) => Vector2.Zero;
+        public static Vector2 Evade(PointMass player, PointMass target)
+            => -1 * Pursue(player, target);
+
+        public static Vector2 EvadeNormalized(PointMass player, PointMass target)
+            => Vector2.Normalize(Evade(player, target));
     }
 }
