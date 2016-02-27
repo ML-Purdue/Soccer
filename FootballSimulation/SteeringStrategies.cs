@@ -36,6 +36,11 @@ namespace FootballSimulation
         public static Vector2 Seek(PointMass player, Vector2 target, float desiredSpeed)
             => Vector2.Normalize(target - player.Position) * desiredSpeed - player.Velocity;
 
+        public static Vector2 SlowDown(PointMass player)
+        {
+            return player.Velocity * -1;
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="player"></param>
