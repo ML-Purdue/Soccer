@@ -83,6 +83,13 @@ namespace FootballSimulation
                 : Vector2.Zero;
         }
 
+        /// <summary>
+        /// Returns a string representation of the point mass.
+        /// </summary>
+        /// <returns>A debug string.</returns>
+        public override string ToString()
+            => "{Position=" + Position + ",Velocity=" + Velocity + ",Acceleration=" + Acceleration + "}";
+          
         internal void Simulate(float time)
         {
             Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
