@@ -6,14 +6,14 @@ namespace FootballSimulation
     /// <summary>
     ///     Steering Behaviors based on http://www.red3d.com/cwr/steer/gdc99/
     /// </summary>
-    // TODO: Finish in the XML documentation.
     public static class SteeringStrategies
     {
         /// <summary>
         ///     Move to and stop at a specified position.
         /// </summary>
-        /// <param name="position"></param>
+        /// <param name="player"></param>
         /// <param name="target"></param>
+        /// <param name="slowingRadius"></param>
         /// <returns></returns>
         public static Vector2 Arrive(PointMass player, Vector2 target, float slowingRadius)
         {
@@ -126,6 +126,12 @@ namespace FootballSimulation
                                              // If things still don't work, redo the math.
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public static Vector2 PursueNormalized(PointMass player, PointMass target)
             => Vector2.Normalize(Pursue(player, target));
 
@@ -138,6 +144,12 @@ namespace FootballSimulation
         public static Vector2 Evade(PointMass player, PointMass target)
             => -1 * Pursue(player, target);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public static Vector2 EvadeNormalized(PointMass player, PointMass target)
             => Vector2.Normalize(Evade(player, target));
     }
