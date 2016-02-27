@@ -19,6 +19,10 @@ namespace FootballSimulation
         {
             var targetOffset = target - player.Position;
             var distance = targetOffset.Length();
+            if (distance == 0)
+            {
+                return SlowDown(player);
+            }
             var rampedSpeed = player.MaxSpeed * (distance / slowingRadius);
             var clippedSpeed = Math.Min(rampedSpeed, player.MaxSpeed);
             var desiredVelocity = clippedSpeed / distance * targetOffset;

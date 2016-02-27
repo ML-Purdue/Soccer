@@ -38,7 +38,7 @@ namespace FootballSimulation
 
             _simulate = SimulatePlaying;
             _teams = teams;
-            _startingPositions = from t in teams select t.PlayerPositions;
+            _startingPositions = new[] { teams[0].PlayerPositions, teams[1].PlayerPositions }; // TODO: Fix this
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;

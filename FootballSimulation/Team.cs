@@ -37,7 +37,7 @@ namespace FootballSimulation
         public ReadOnlyCollection<PointMass> Players { get; }
 
         /// <summary>The player positions.</summary>
-        public IEnumerable<Vector2> PlayerPositions => from p in Players select p.Position;
+        public ReadOnlyCollection<Vector2> PlayerPositions => new ReadOnlyCollection<Vector2>((from p in Players select p.Position).ToList());
 
         /// <summary>The team strategy.</summary>
         public ITeamStrategy Strategy
