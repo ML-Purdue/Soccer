@@ -6,30 +6,22 @@ namespace FootballSimulation
     /// <summary>
     ///     Steering Behaviors based on http://www.red3d.com/cwr/steer/gdc99/
     /// </summary>
-    // TODO: Finish in the XML documentation.
     public static class SteeringStrategies
     {
         /// <summary>
         ///     Move to and stop at a specified position.
         /// </summary>
-        /// <param name="position"></param>
+        /// <param name="player"></param>
         /// <param name="target"></param>
+        /// <param name="slowingRadius"></param>
         /// <returns></returns>
         public static Vector2 Arrive(PointMass player, Vector2 target, float maxSpeed, float slowingRadius)
         {
-            /*
-                target_offset = target - position
-                distance = length (target_offset)
-                ramped_speed = max_speed * (distance / slowing_distance)
-                clipped_speed = minimum (ramped_speed, max_speed)
-                desired_velocity = (clipped_speed / distance) * target_offset
-                steering = desired_velocity - velocity
-            */
             var targetOffset = target - player.Position;
             var distance = targetOffset.Length();
-            var rampedSpeed = maxSpeed * (distance / slowingRadius);
-            var clippedSpeed = Math.Min(rampedSpeed, maxSpeed);
-            var desiredVelocity = (clippedSpeed / distance) * targetOffset;
+            var rampedSpeed = player.MaxSpeed * (distance / slowingRadius);
+            var clippedSpeed = Math.Min(rampedSpeed, player.MaxSpeed);
+            var desiredVelocity = clippedSpeed / distance * targetOffset;
 
             return desiredVelocity - player.Velocity;
         }
@@ -123,6 +115,12 @@ namespace FootballSimulation
                                              // If things still don't work, redo the math.
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public static Vector2 PursueNormalized(PointMass player, PointMass target)
             => Vector2.Normalize(Pursue(player, target));
 
@@ -135,6 +133,12 @@ namespace FootballSimulation
         public static Vector2 Evade(PointMass player, PointMass target)
             => -1 * Pursue(player, target);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public static Vector2 EvadeNormalized(PointMass player, PointMass target)
             => Vector2.Normalize(Evade(player, target));
     }
