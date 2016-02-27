@@ -15,7 +15,7 @@ namespace FootballSimulation
     {
         private readonly PointMass _ball;
         private readonly Vector2 _ballStartingPosition;
-        private readonly IEnumerable<IEnumerable<Vector2>> _startingPositions;
+        private readonly ReadOnlyCollection<ReadOnlyCollection<Vector2>> _startingPositions;
         private readonly ReadOnlyCollection<Team> _teams;
 
         private SimulateState _simulate;
@@ -38,7 +38,7 @@ namespace FootballSimulation
 
             _simulate = SimulatePlaying;
             _teams = teams;
-            _startingPositions = new[] { teams[0].PlayerPositions, teams[1].PlayerPositions }; // TODO: Fix this
+            _startingPositions = (from t in teams select t.PlayerPositions).ToList().AsReadOnly();
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
