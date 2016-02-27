@@ -17,19 +17,11 @@ namespace FootballSimulation
         /// <returns></returns>
         public static Vector2 Arrive(PointMass player, Vector2 target, float slowingRadius)
         {
-            /*
-                target_offset = target - position
-                distance = length (target_offset)
-                ramped_speed = max_speed * (distance / slowing_distance)
-                clipped_speed = minimum (ramped_speed, max_speed)
-                desired_velocity = (clipped_speed / distance) * target_offset
-                steering = desired_velocity - velocity
-            */
             var targetOffset = target - player.Position;
             var distance = targetOffset.Length();
             var rampedSpeed = player.MaxSpeed * (distance / slowingRadius);
             var clippedSpeed = Math.Min(rampedSpeed, player.MaxSpeed);
-            var desiredVelocity = (clippedSpeed / distance) * targetOffset;
+            var desiredVelocity = clippedSpeed / distance * targetOffset;
 
             return desiredVelocity - player.Velocity;
         }
