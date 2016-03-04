@@ -40,6 +40,14 @@ namespace FootballSimulation
         /// <summary>The maximum speed. <c>Velocity.Length</c> will never exceed this value.</summary>
         public float MaxSpeed { get; }
 
+        /// <summary>The net force on the point mass.</summary>
+        public Vector2 Force
+        {
+            get { return Acceleration/Mass; }
+
+            set { Acceleration = value.ClampMagnitude(MaxForce)/Mass; }
+        }
+
         /// <summary>The mass.</summary>
         public float Mass { get; }
 
@@ -54,12 +62,6 @@ namespace FootballSimulation
 
         /// <summary>The acceleration calculated as <c>Acceleration = force/Mass</c>.</summary>
         public Vector2 Acceleration { get; private set; }
-
-        /// <summary>
-        ///     Sets the force on the point mass and recalculates the <see cref="Acceleration" />.
-        /// </summary>
-        /// <param name="value">The force to be excerted on the point mass.</param>
-        public void SetForce(Vector2 value) => Acceleration = value.ClampMagnitude(MaxForce)/Mass;
 
         /// <summary>
         ///     Calculate the frictionCoefficient force given the friction coefficient between the point mass
@@ -84,20 +86,15 @@ namespace FootballSimulation
         }
 
         /// <summary>
-        /// Returns a string representation of the point mass.
+        ///     Returns a string representation of the point mass.
         /// </summary>
         /// <returns>A debug string.</returns>
         public override string ToString()
             => "{Position=" + Position + ",Velocity=" + Velocity + ",Acceleration=" + Acceleration + "}";
-          
-        internal void Simulate(float time)
-        {
-            Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
-                // For x = x0 + v0 + .5at^2 use this: - Vector2.Multiply(Convert.ToSingle(.5), Acceleration) * time * time;
-            Acceleration = Vector2.Zero;
-        }
 
-        // TODO: May need to adjust position.
+        internal void Simulate(float time)
+            => Position += (Velocity = (Velocity + Acceleration*time).ClampMagnitude(MaxSpeed))*time;
+
         internal void ResolveCollision(Vector2 normal) => Velocity = Vector2.Reflect(Velocity, normal);
 
         internal void Reset(Vector2 position)

@@ -33,18 +33,21 @@ namespace FootballSimulation
             Contract.Requires<ArgumentNullException>(ball != null);
             Contract.Requires<ArgumentException>(friction >= 0);
             Contract.Requires<ArgumentException>(pitchBounds.Width > 0 && pitchBounds.Height > 0);
-            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t => t != null && t.IsValid(pitchBounds)));
+            Contract.Requires<ArgumentException>(Contract.ForAll(teams, t =>
+                t != null &&
+                pitchBounds.IntersectsOrBorders(t.GoalBounds) &&
+                t.Players.All(p => pitchBounds.Contains(p.Position))));
             Contract.Requires<ArgumentException>(pitchBounds.Contains(ball.Position));
 
             _simulate = SimulatePlaying;
             _teams = teams;
-            _startingPositions = (from t in teams select t.PlayerPositions).ToList().AsReadOnly();
+            _startingPositions = (from t in teams select (from p in t.Players select p.Position).ToList().AsReadOnly()).ToList().AsReadOnly();
             _ball = ball;
             _ballStartingPosition = ball.Position;
             PitchBounds = pitchBounds;
             Friction = friction;
         }
-        
+
         /// <summary>The teams playing against one another.</summary>
         public ReadOnlyCollection<ITeam> Teams => _teams.ToList<ITeam>().AsReadOnly();
 
@@ -66,18 +69,20 @@ namespace FootballSimulation
         // Execute the strategies and simulate the teams and ball.
         private void SimulatePlaying(float time)
         {
-            var kicks = from team in _teams select team.ExecuteStrategy(this);
+            var kicks = from team in _teams select team.Execute(this);
             _teams.ForEach(t => t.Simulate(time));
             SimulateBall(time, kicks);
         }
 
         // Moves the players of both teams back to their starting positions.
+        // TODO: Fix the bugs here!
         private void SimulateResetting(float time)
         {
             if (_teams.Zip(_startingPositions, (t, s) => t.Players.Zip(s, (p, q) =>
             {
+                // TODO: Don't hardcode stuff.
                 var slowingRadius = 10;
-                p.SetForce(SteeringStrategies.Arrive(p, q, p.MaxSpeed, slowingRadius));
+                p.Force = SteeringStrategies.Arrive(p, q, p.MaxSpeed, slowingRadius);
                 p.Simulate(time);
                 return (p.Position - q).LengthSquared() < p.Radius;
             }).All(x => x)).All(x => x)) OnReset();
@@ -86,7 +91,7 @@ namespace FootballSimulation
         // Updates the ball's position and velocity. Also handles collisions and goals.
         private void SimulateBall(float time, IEnumerable<Kick> kicks)
         {
-            _ball.SetForce(ResolveBallDirection(kicks));
+            _ball.Force = ResolveBallDirection(kicks);
             _ball.Simulate(time);
             var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
             if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
@@ -95,6 +100,7 @@ namespace FootballSimulation
 
         // Determines the ball's direction after it is kicked.
         // TODO: Need to take the players' orientations relative to their velocities into account.
+        // TODO: Validate kicks.
         private Vector2 ResolveBallDirection(IEnumerable<Kick> kicks)
         {
             var totalKickForce = Vector2.Zero;

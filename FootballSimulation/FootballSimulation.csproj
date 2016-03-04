@@ -130,9 +130,7 @@
     <Compile Include="IPointMass.cs" />
     <Compile Include="ISimulation.cs" />
     <Compile Include="ITeam.cs" />
-    <Compile Include="ITeamStrategy.cs" />
     <Compile Include="Kick.cs" />
-    <Compile Include="NullTeamStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="RectangleFExtensions.cs" />

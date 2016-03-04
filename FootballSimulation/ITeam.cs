@@ -8,9 +8,6 @@ namespace FootballSimulation
     /// </summary>
     public interface ITeam
     {
-        /// <summary>The team strategy.</summary>
-        ITeamStrategy Strategy { get; }
-
         /// <summary>The team players.</summary>
         ReadOnlyCollection<IPointMass> Players { get; }
 
