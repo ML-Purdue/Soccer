@@ -93,8 +93,8 @@ namespace FootballSimulation
         {
             _ball.Force = ResolveBallDirection(kicks);
             _ball.Simulate(time);
-            var collision = CollisionMath.CircleRectangleCollide(_ball.Position, _ball.Radius, PitchBounds);
-            if (collision != null) _ball.ResolveCollision(collision.Value.Normal);
+            var normal = CollisionMath.GetCircleRectangleCollisionNormal(_ball.Position, _ball.Radius, PitchBounds);
+            if (normal != null) _ball.ResolveCollision(normal.Value);
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
