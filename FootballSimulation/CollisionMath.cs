@@ -25,7 +25,7 @@ namespace FootballSimulation
             var length = v.Length();
 
             return length > 0 && length < radius
-                ? new Collision(contact, v / length)
+                ? new Collision(v / length)
                 : (Collision?) null;
         }
 
@@ -34,20 +34,15 @@ namespace FootballSimulation
         /// </summary>
         public struct Collision
         {
-            /// <summary>The point of contact for the collision.</summary>
-            public Vector2 Contact { get; }
-
             /// <summary>A normal vector perpendicular to the collision plane.</summary>
             public Vector2 Normal { get; }
 
             /// <summary>
             ///     Initializes an instance of the <see cref="Collision" /> structure with the specified contact point and collision normal.
             /// </summary>
-            /// <param name="contact">The point of contact for the collision.</param>
             /// <param name="normal">A normal vector perpendicular to the collision plane.</param>
-            public Collision(Vector2 contact, Vector2 normal)
+            public Collision(Vector2 normal)
             {
-                Contact = contact;
                 Normal = normal;
             }
         }

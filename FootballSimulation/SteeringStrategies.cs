@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Numerics;
 
 namespace FootballSimulation
@@ -18,6 +19,8 @@ namespace FootballSimulation
         /// <returns></returns>
         public static Vector2 Arrive(PointMass player, Vector2 target, float maxSpeed, float slowingRadius)
         {
+            Contract.Requires<ArgumentException>(player != null);
+
             var targetOffset = target - player.Position;
             var distance = targetOffset.Length();
             var rampedSpeed = maxSpeed * (distance / slowingRadius);
@@ -35,6 +38,8 @@ namespace FootballSimulation
         /// <returns></returns>
         public static float GetSlowingRadius(PointMass player)
         {
+            Contract.Requires<ArgumentException>(player != null);
+
             return player.MaxSpeed * player.MaxSpeed / (2 * player.MaxForce / player.Mass);
         }
 
@@ -46,7 +51,10 @@ namespace FootballSimulation
         /// <param name="desiredSpeed"></param>
         /// <returns></returns>
         public static Vector2 Seek(PointMass player, Vector2 target, float desiredSpeed)
-            => Vector2.Normalize(target - player.Position) * desiredSpeed - player.Velocity;
+        {
+            Contract.Requires<ArgumentException>(player != null);
+            return Vector2.Normalize(target - player.Position) * desiredSpeed - player.Velocity;
+        }
 
         private static int IntervalComparison(float x, float lower, float upper) => x < lower ? (x > upper ? 1 : 0) : -1;
 

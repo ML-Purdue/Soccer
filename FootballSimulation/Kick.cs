@@ -7,6 +7,7 @@ namespace FootballSimulation
     /// <summary>
     ///     Represents the act of kicking the ball.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public struct Kick
     {
         /// <summary>The player that kicked the ball.</summary>

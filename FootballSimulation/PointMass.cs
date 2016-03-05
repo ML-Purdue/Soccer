@@ -34,7 +34,7 @@ namespace FootballSimulation
             Velocity = velocity;
         }
 
-        /// <summary>The maximum force. The value passed to <see cref="SetForce" /> will be truncated to this value.</summary>
+        /// <summary>The maximum force. <see cref="Force" /> will be truncated to this value.</summary>
         public float MaxForce { get; }
 
         /// <summary>The maximum speed. <c>Velocity.Length</c> will never exceed this value.</summary>
