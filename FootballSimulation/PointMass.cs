@@ -54,13 +54,13 @@ namespace FootballSimulation
 
         /// <summary>The acceleration calculated as <c>Acceleration = force/Mass</c>.</summary>
         public Vector2 Acceleration { get; private set; }
-
+        
         /// <summary>The net force on the point mass.</summary>
         public Vector2 Force
         {
-            get { return Acceleration / Mass; }
+            get { return Acceleration/Mass; }
 
-            set { Acceleration = value.ClampMagnitude(MaxForce) / Mass; }
+            set { Acceleration = value.ClampMagnitude(MaxForce)/Mass; }
         }
 
         /// <summary>
