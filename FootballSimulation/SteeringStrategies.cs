@@ -106,7 +106,7 @@ namespace FootballSimulation
                     {
                         case 1: t = 0.5f; break;
                         case 0: t = 2f; break;
-                        case -1: f = 2; break;
+                        case -1: t = 2; break;
                     }
                     break;
             }
