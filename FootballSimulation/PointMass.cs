@@ -40,14 +40,6 @@ namespace FootballSimulation
         /// <summary>The maximum speed. <c>Velocity.Length</c> will never exceed this value.</summary>
         public float MaxSpeed { get; }
 
-        /// <summary>The net force on the point mass.</summary>
-        public Vector2 Force
-        {
-            get { return Acceleration/Mass; }
-
-            set { Acceleration = value.ClampMagnitude(MaxForce)/Mass; }
-        }
-
         /// <summary>The mass.</summary>
         public float Mass { get; }
 
@@ -62,6 +54,14 @@ namespace FootballSimulation
 
         /// <summary>The acceleration calculated as <c>Acceleration = force/Mass</c>.</summary>
         public Vector2 Acceleration { get; private set; }
+
+        /// <summary>The net force on the point mass.</summary>
+        public Vector2 Force
+        {
+            get { return Acceleration / Mass; }
+
+            set { Acceleration = value.ClampMagnitude(MaxForce) / Mass; }
+        }
 
         /// <summary>
         ///     Calculate the frictionCoefficient force given the friction coefficient between the point mass

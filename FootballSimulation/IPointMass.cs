@@ -7,6 +7,12 @@ namespace FootballSimulation
     /// </summary>
     public interface IPointMass
     {
+        /// <summary>The maximum force. <see cref="Force" /> will be truncated to this value.</summary>
+        float MaxForce { get; }
+
+        /// <summary>The maximum speed. <c>Velocity.Length</c> will never exceed this value.</summary>
+        float MaxSpeed { get; }
+
         /// <summary>The mass.</summary>
         float Mass { get; }
 
@@ -21,5 +27,16 @@ namespace FootballSimulation
 
         /// <summary>The acceleration calculated as <c>Acceleration = force/Mass</c>.</summary>
         Vector2 Acceleration { get; }
+
+        /// <summary>The net force on the point mass.</summary>
+        Vector2 Force { get; }
+
+        /// <summary>
+        ///     Calculate the frictionCoefficient force given the friction coefficient between the point mass
+        ///     and the medium in which the point mass is moving.
+        /// </summary>
+        /// <param name="frictionCoefficient">The friction coefficient.</param>
+        /// <returns>A vector opposite to the direction of motion representing the friction force.</returns>
+        Vector2 GetFriction(float frictionCoefficient);
     }
 }
