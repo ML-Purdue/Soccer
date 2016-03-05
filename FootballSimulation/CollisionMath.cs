@@ -11,7 +11,7 @@ namespace FootballSimulation
         /// <param name="center">The center of the circle.</param>
         /// <param name="radius">The radius of the circle.</param>
         /// <param name="rectangle">The rectangle.</param>
-        /// <returns>This method returns a <see cref="Vector2" /> structue representing the normal if a collision occurs; otherwise <c>null</c>.</returns>
+        /// <returns>Returns a <see cref="Vector2" /> representing the normal if a collision occurs; otherwise <c>null</c>.</returns>
         public static Vector2? GetCircleRectangleCollisionNormal(Vector2 center, float radius, RectangleF rectangle)
         {
             var contact = center;
@@ -24,9 +24,7 @@ namespace FootballSimulation
             var v = new Vector2(contact.X - center.X, contact.Y - center.Y);
             var length = v.Length();
 
-            return length > 0 && length < radius
-                ? v / length
-                : (Vector2?)null;
+            return length > 0 && length < radius ? v/length : (Vector2?) null;
         }
     }
 }
