@@ -48,39 +48,6 @@ namespace FootballSimulation
         public static Vector2 Seek(PointMass player, Vector2 target, float desiredSpeed)
             => Vector2.Normalize(target - player.Position) * desiredSpeed - player.Velocity;
 
-        public static Vector2 SlowDown(PointMass player)
-        {
-            return player.Velocity * -1;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="desiredSpeed"></param>
-        /// <returns></returns>
-        public static Vector2 SeekNormalized(PointMass player, Vector2 target, float desiredSpeed)
-            => Vector2.Normalize(Seek(player, target, desiredSpeed));
-
-        /// <summary>
-        ///     Move away from a specified position.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="desiredSpeed"></param>
-        /// <returns></returns>
-        public static Vector2 Flee(PointMass player, Vector2 target, float desiredSpeed)
-            => -1 * Seek(player, target, desiredSpeed);
-
-        /// <summary>
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="desiredSpeed"></param>
-        /// <returns></returns>
-        public static Vector2 FleeNormalized(PointMass player, Vector2 target, float desiredSpeed)
-            => Vector2.Normalize(Flee(player, target, desiredSpeed));
-
         private static int IntervalComparison(float x, float lower, float upper) => x < lower ? (x > upper ? 1 : 0) : -1;
 
         /// <summary>
@@ -153,35 +120,5 @@ namespace FootballSimulation
 
             return Seek(player, targetPosition, player.MaxSpeed);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="maxPredictionTime"></param>
-        /// <returns></returns>
-        public static Vector2 PursueNormalized(PointMass player, PointMass target, float maxPredictionTime)
-            => Vector2.Normalize(Pursue(player, target, maxPredictionTime));
-
-        /// <summary>
-        ///     Move away from a target's future position.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="maxPredictionTime"></param>
-        /// <returns></returns>
-        public static Vector2 Evade(PointMass player, PointMass target, float maxPredictionTime)
-            => -1 * Pursue(player, target, maxPredictionTime);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="maxPredictionTime"></param>
-        /// <returns></returns>
-        public static Vector2 EvadeNormalized(PointMass player, PointMass target, float maxPredictionTime)
-            => Vector2.Normalize(Evade(player, target, maxPredictionTime));
     }
 }
