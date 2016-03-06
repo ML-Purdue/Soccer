@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Numerics;
 
 namespace FootballSimulation
@@ -9,6 +11,20 @@ namespace FootballSimulation
     /// </summary>
     public static class SteeringStrategies
     {
+        private static readonly ReadOnlyCollection<float> TimeFactorTable =
+            new[]
+            {
+                4.00f, // ahead  parallel
+                1.80f, // ahead  perpendicular
+                0.85f, // ahead  anti-parallel
+                1.00f, // aside  parallel
+                0.80f, // aside  perpendicular
+                4.00f, // aside  anti-parallel
+                0.50f, // behind parallel 
+                2.00f, // behind perpendicular
+                2.00f, // behind anti-parallel
+            }.ToList().AsReadOnly();
+
         /// <summary>
         ///     Move to and stop at a specified position.
         /// </summary>
@@ -53,80 +69,39 @@ namespace FootballSimulation
         public static Vector2 Seek(PointMass player, Vector2 target, float desiredSpeed)
         {
             Contract.Requires<ArgumentException>(player != null);
-            return Vector2.Normalize(target - player.Position) * desiredSpeed - player.Velocity;
+            return Vector2.Normalize(target - player.Position)*desiredSpeed - player.Velocity;
         }
-
-        private static int IntervalComparison(float x, float lower, float upper) => x < lower ? (x > upper ? 1 : 0) : -1;
 
         /// <summary>
         ///     Move toward a target's future position. This method assumes the player will move at their maximum speed.  It also
-        ///     ignores friction on the target. Ported from https://github.com/meshula/OpenSteer/blob/master/include/OpenSteer/SteerLibrary.h
+        ///     ignores friction on the target.
         /// </summary>
         /// <param name="player"></param>
         /// <param name="target"></param>
-        /// <param name="maxPredictionTime"></param>
+        /// <param name="maxEstimatedTime"></param>
         /// <returns></returns>
-        public static Vector2 Pursue(PointMass player, PointMass target, float maxPredictionTime)
+        public static Vector2 Pursue(PointMass player, PointMass target, float maxEstimatedTime)
         {
-            var offset = target.Position - player.Position;
-            var distance = offset.Length();
-            var unitOffset = offset / distance;
-
-            var parallelness = Vector2.Dot(Vector2.Normalize(player.Velocity), Vector2.Normalize(target.Velocity));
-            if (float.IsNaN(parallelness)) parallelness = 0;
-            var forwardness = Vector2.Dot(Vector2.Normalize(player.Velocity), unitOffset);
-            if (float.IsNaN(forwardness)) forwardness = 0;
-
-            var f = IntervalComparison(forwardness, -0.707f, 0.707f);
-            var p = IntervalComparison(parallelness, -0.707f, 0.707f);
-            var t = 0f;
-
-            switch (f)
+            var estimatedTime = maxEstimatedTime;
+            var invSpeed = 1/player.Velocity.Length();
+            
+            if (!float.IsNaN(invSpeed))
             {
-                case 1:
-                    switch (p)
-                    {
-                        case 1: t = 4; break;
-                        case 0: t = 1.8f; break;
-                        case -1: t = 0.85f; break;
-                    }
-                    break;
+                int p, f;
 
-                case 0:
-                    switch (p)
-                    {
-                        case 1: t = 1f; break;
-                        case 0: t = 0.8f; break;
-                        case -1: t = 4; break;
-                    }
-                    break;
+                var offset = target.Position - player.Position;
+                var parallelness = Vector2.Dot(Vector2.Normalize(player.Velocity), Vector2.Normalize(target.Velocity));
+                if (float.IsNaN(parallelness)) p = 1;
+                else p = parallelness < -0.707f ? 2 : (parallelness > 0.707f ? 0 : 1);
+                var forwardness = Vector2.Dot(Vector2.Normalize(player.Velocity), Vector2.Normalize(offset));
+                if (float.IsNaN(forwardness)) f = 3;
+                else f = forwardness < -0.707f ? 6 : (forwardness > 0.707f ? 0 : 3);
 
-                case -1:
-                    switch (p)
-                    {
-                        case 1: t = 0.5f; break;
-                        case 0: t = 2f; break;
-                        case -1: t = 2; break;
-                    }
-                    break;
+                estimatedTime = Math.Min(offset.Length() * invSpeed * TimeFactorTable[p + f], maxEstimatedTime);
             }
 
-            var directTravelTime = distance / player.Velocity.Length();
-            float etl;
-
-            if (float.IsInfinity(directTravelTime))
-            {
-                etl = maxPredictionTime;
-            }
-            else
-            {
-                var et = directTravelTime * t;
-                etl = et > maxPredictionTime ? maxPredictionTime : et;
-            }
-
-            var targetPosition = target.Position + target.Velocity * etl;
-
-            return Seek(player, targetPosition, player.MaxSpeed);
+            var futurePosition = target.Position + target.Velocity*estimatedTime;
+            return Seek(player, futurePosition, player.MaxSpeed);
         }
     }
 }
