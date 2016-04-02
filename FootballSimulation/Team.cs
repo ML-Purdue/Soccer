@@ -44,6 +44,14 @@ namespace FootballSimulation
         /// <returns>The kick.</returns>
         public abstract Kick Execute(ISimulation simulation);
 
+        /// <summary>
+        ///     Draws debugging information.
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
+        public virtual void DrawDebugInfo(Graphics g)
+        {
+        }
+
         internal void Simulate(float time) => Players.ForEach(p => p.Simulate(time));
 
         internal void OnGoalScored() => GoalsScored++;

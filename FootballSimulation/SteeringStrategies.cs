@@ -73,18 +73,17 @@ namespace FootballSimulation
         }
 
         /// <summary>
-        ///     Move toward a target's future position. This method assumes the player will move at their maximum speed.  It also
-        ///     ignores friction on the target.
+        ///     Estimates the future position of target.
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">T</param>
         /// <param name="target"></param>
-        /// <param name="maxEstimatedTime"></param>
+        /// <param name="max"></param>
         /// <returns></returns>
-        public static Vector2 Pursue(PointMass player, PointMass target, float maxEstimatedTime)
+        public static Vector2 FuturePosition(PointMass player, PointMass target, float max)
         {
-            var estimatedTime = maxEstimatedTime;
-            var invSpeed = 1/player.Velocity.Length();
-            
+            var estimatedTime = max;
+            var invSpeed = 1 / player.Velocity.Length();
+
             if (!float.IsNaN(invSpeed))
             {
                 int p, f;
@@ -97,11 +96,21 @@ namespace FootballSimulation
                 if (float.IsNaN(forwardness)) f = 3;
                 else f = forwardness < -0.707f ? 6 : (forwardness > 0.707f ? 0 : 3);
 
-                estimatedTime = Math.Min(offset.Length() * invSpeed * TimeFactorTable[p + f], maxEstimatedTime);
+                estimatedTime = Math.Min(offset.Length() * invSpeed * TimeFactorTable[p + f], max);
             }
 
-            var futurePosition = target.Position + target.Velocity*estimatedTime;
-            return Seek(player, futurePosition, player.MaxSpeed);
+            return target.Position + target.Velocity * estimatedTime;
         }
+
+        /// <summary>
+        ///     Move toward a target's future position. This method assumes the player will move at their maximum speed.  It also
+        ///     ignores friction on the target.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <param name="maxEstimatedTime"></param>
+        /// <returns></returns>
+        public static Vector2 Pursue(PointMass player, PointMass target, float maxEstimatedTime)
+            => Seek(player, FuturePosition(player, target, maxEstimatedTime), player.MaxSpeed);
     }
 }

@@ -129,6 +129,7 @@
   <ItemGroup>
     <Compile Include="CollisionMath.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="FootballStrategies.cs" />
     <Compile Include="IPointMass.cs" />
     <Compile Include="ISimulation.cs" />
     <Compile Include="ITeam.cs" />
