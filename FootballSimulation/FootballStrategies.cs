@@ -68,20 +68,7 @@ namespace FootballSimulation
         /// <param name="max"></param>
         /// <returns></returns>
         public static IPointMass ClosestPlayerToPoint(IEnumerable<IPointMass> players, IPointMass target, float max)
-        {
-            IPointMass closest = null;
-            var len = float.PositiveInfinity;
-
-            foreach (var p in players)
-            {
-                var l = (p.Position - SteeringStrategies.FuturePosition(p, target, max)).Length();
-                if (l > len) continue;
-                closest = p;
-                len = l;
-            }
-
-            return closest;
-        }
+            => players.OrderBy(p => (p.Position - SteeringStrategies.FuturePosition(p, target, max)).LengthSquared()).First();
 
         /// <summary>
         /// </summary>
