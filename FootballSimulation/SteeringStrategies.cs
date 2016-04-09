@@ -22,67 +22,73 @@ namespace FootballSimulation
                 4.00f, // aside  anti-parallel
                 0.50f, // behind parallel 
                 2.00f, // behind perpendicular
-                2.00f, // behind anti-parallel
+                2.00f // behind anti-parallel
             }.ToList().AsReadOnly();
 
         /// <summary>
         ///     Move to and stop at a specified position.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="maxSpeed"></param>
-        /// <param name="slowingRadius"></param>
-        /// <returns></returns>
-        public static Vector2 Arrive(PointMass player, Vector2 target, float maxSpeed, float slowingRadius)
+        /// <param name="player">The player that should arrive at the specified position.</param>
+        /// <param name="target">The target position.</param>
+        /// <param name="maxSpeed">The maximum speed at which the player should move towards the target position.</param>
+        /// <param name="slowingRadius">The radius in which the player should begin to slow down.</param>
+        /// <returns>The force vector that should be applied to the player.</returns>
+        public static Vector2 Arrive(IPointMass player, Vector2 target, float maxSpeed, float slowingRadius)
         {
             Contract.Requires<ArgumentException>(player != null);
+            Contract.Requires<ArgumentException>(maxSpeed >= 0);
+            Contract.Requires<ArgumentException>(slowingRadius >= 0);
 
             var targetOffset = target - player.Position;
             var distance = targetOffset.Length();
-            var rampedSpeed = maxSpeed * (distance / slowingRadius);
+            var rampedSpeed = maxSpeed*(distance/slowingRadius);
             var clippedSpeed = Math.Min(rampedSpeed, player.MaxSpeed);
-            var direction = targetOffset / distance;
-            var desiredVelocity = clippedSpeed * direction;
+            var direction = targetOffset/distance;
+            var desiredVelocity = clippedSpeed*direction;
 
             return desiredVelocity - player.Velocity;
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static float GetSlowingRadius(PointMass player)
+        public static float GetSlowingRadius(IPointMass player)
         {
             Contract.Requires<ArgumentException>(player != null);
-
-            return player.MaxSpeed * player.MaxSpeed / (2 * player.MaxForce / player.Mass);
+            return player.MaxSpeed*player.MaxSpeed/(2*player.MaxForce/player.Mass);
         }
 
         /// <summary>
         ///     Move toward a specified position.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="desiredSpeed"></param>
-        /// <returns></returns>
-        public static Vector2 Seek(PointMass player, Vector2 target, float desiredSpeed)
+        /// <param name="player">The player that should seek the specified position.</param>
+        /// <param name="target">The target position.</param>
+        /// <param name="desiredSpeed">The desired speed at which the player should move towards the target.</param>
+        /// <returns>The force vector that should be applied to the player.</returns>
+        public static Vector2 Seek(IPointMass player, Vector2 target, float desiredSpeed)
         {
             Contract.Requires<ArgumentException>(player != null);
+            Contract.Requires<ArgumentException>(desiredSpeed >= 0);
+
             return Vector2.Normalize(target - player.Position)*desiredSpeed - player.Velocity;
         }
 
         /// <summary>
         ///     Estimates the future position of target.
         /// </summary>
-        /// <param name="player">T</param>
-        /// <param name="target"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        public static Vector2 FuturePosition(PointMass player, PointMass target, float max)
+        /// <param name="player">The player on which the future position estimate is to be performed.</param>
+        /// <param name="target">The target position of the player.</param>
+        /// <param name="max">The maximum estimated time.</param>
+        /// <returns>The future position of the player.</returns>
+        public static Vector2 FuturePosition(IPointMass player, IPointMass target, float max)
         {
+            Contract.Requires<ArgumentException>(player != null);
+            Contract.Requires<ArgumentException>(target != null);
+            Contract.Requires<ArgumentException>(max >= 0);
+
             var estimatedTime = max;
-            var invSpeed = 1 / player.Velocity.Length();
+            var invSpeed = 1/player.Velocity.Length();
 
             if (!float.IsNaN(invSpeed))
             {
@@ -96,21 +102,21 @@ namespace FootballSimulation
                 if (float.IsNaN(forwardness)) f = 3;
                 else f = forwardness < -0.707f ? 6 : (forwardness > 0.707f ? 0 : 3);
 
-                estimatedTime = Math.Min(offset.Length() * invSpeed * TimeFactorTable[p + f], max);
+                estimatedTime = Math.Min(offset.Length()*invSpeed*TimeFactorTable[p + f], max);
             }
 
-            return target.Position + target.Velocity * estimatedTime;
+            return target.Position + target.Velocity*estimatedTime;
         }
 
         /// <summary>
         ///     Move toward a target's future position. This method assumes the player will move at their maximum speed.  It also
         ///     ignores friction on the target.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <param name="maxEstimatedTime"></param>
-        /// <returns></returns>
-        public static Vector2 Pursue(PointMass player, PointMass target, float maxEstimatedTime)
+        /// <param name="player">The player that should pursue the specified location.</param>
+        /// <param name="target">The target position that the player should pursue.</param>
+        /// <param name="maxEstimatedTime">The maximum estimated time.</param>
+        /// <returns>The force vector that shoud be applied to the player.</returns>
+        public static Vector2 Pursue(IPointMass player, IPointMass target, float maxEstimatedTime)
             => Seek(player, FuturePosition(player, target, maxEstimatedTime), player.MaxSpeed);
     }
 }
