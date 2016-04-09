@@ -70,7 +70,7 @@ namespace FootballSimulation
         public static IPointMass ClosestPlayerToPoint(IEnumerable<IPointMass> players, IPointMass target, float max)
         {
             IPointMass closest = null;
-            var len = float.NegativeInfinity;
+            var len = float.PositiveInfinity;
 
             foreach (var p in players)
             {
