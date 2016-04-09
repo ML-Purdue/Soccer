@@ -47,8 +47,9 @@ namespace FootballSimulation
         /// <summary>
         ///     Draws debugging information.
         /// </summary>
+        /// <param name="simulation">The simulation in which the team is taking part.</param>
         /// <param name="g">The drawing surface.</param>
-        public virtual void DrawDebugInfo(Graphics g)
+        public virtual void DrawDebugInfo(ISimulation simulation, Graphics g)
         {
         }
 

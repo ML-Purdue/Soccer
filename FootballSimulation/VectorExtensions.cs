@@ -18,5 +18,21 @@ namespace FootballSimulation
             var length = vector.Length();
             return length > maxLength ? vector*maxLength/length : vector;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static Vector2 Projection(this Vector2 v, Vector2 other) => Vector2.Dot(v, other) / other.LengthSquared() * other;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static Vector2 Rejection(this Vector2 v, Vector2 other) => v - v.Projection(other);
     }
 }

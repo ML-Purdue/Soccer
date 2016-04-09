@@ -36,11 +36,32 @@ namespace FootballSimulation
         /// </summary>
         /// <param name="player"></param>
         /// <param name="target"></param>
+        /// <param name="ball"></param>
         /// <returns></returns>
         // TODO: Finish this
-        public static Kick PassToPlayer(PointMass player, PointMass target)
+        public static Kick PassToPlayer(IPointMass player, IPointMass target, IPointMass ball)
         {
-            return new Kick(player, Vector2.Zero); // force will be based on distance between the two players
+            var desiredDirection = target.Position - player.Position;
+
+            if (ball.Velocity.LengthSquared() < 0.1)
+            {
+                return new Kick(player, desiredDirection * 100000);
+            }
+            else
+            {
+                var projection = ball.Velocity.Projection(desiredDirection);
+                var rejection = ball.Velocity.Rejection(desiredDirection);
+                var difference = ball.Velocity - desiredDirection;
+                var force = desiredDirection - projection - rejection;
+
+                //var angle = Math.Atan2(difference.Y, difference.X);
+                //var force = ball.Velocity - rejection * 2;
+
+                //if (Math.Abs(angle) > Math.PI / 2)
+                //    force -= projection * 2;
+
+                return new Kick(player, force * 100000);
+            }
         }
 
         /// <summary>
