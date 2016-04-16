@@ -116,7 +116,6 @@ namespace FootballSimulation
             var stoppingForce = -player.Velocity;
 
             force = v.Length() > 0 ? force : stoppingForce;
-
             if (Math.Abs(player.Position.X - pitchBounds.X) < edgeOverlapRadius && player.Velocity.X < 0)
                 force = new Vector2(-player.Velocity.X, force.Y);
             if (Math.Abs(player.Position.X - pitchBounds.Right) < edgeOverlapRadius && player.Velocity.X > 0)
@@ -125,7 +124,6 @@ namespace FootballSimulation
                 force = new Vector2(force.X, -player.Velocity.Y);
             if (Math.Abs(player.Position.Y - pitchBounds.Bottom) < edgeOverlapRadius && player.Velocity.Y > 0)
                 force = new Vector2(force.X, -player.Velocity.Y);
-
             player.Force = force;
         }
 

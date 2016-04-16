@@ -105,14 +105,14 @@ namespace FootballSimulation
         {
             var totalKickForce = Vector2.Zero;
             kicks.ForEach(k => totalKickForce += k.Force);
-            return totalKickForce + _ball.GetFriction(Friction);
+            return totalKickForce + _ball.GetFriction(Friction) + new Vector2(new Random().Next(4), new Random().Next(4));
         }
 
         // Called when a goal is scored.
         private void OnGoalScored(Team scoringTeam)
         {
             scoringTeam.OnGoalScored();
-            _simulate = SimulateResetting;
+            OnReset();
         }
 
         // Called when the team's have reached their starting positions after executing a reset.
