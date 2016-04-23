@@ -32,6 +32,11 @@ namespace FootballSimulation
         Vector2 Force { get; }
 
         /// <summary>
+        /// Id of the player
+        /// </summary>
+        string id { get; set; }
+
+        /// <summary>
         ///     Calculate the frictionCoefficient force given the friction coefficient between the point mass
         ///     and the medium in which the point mass is moving.
         /// </summary>

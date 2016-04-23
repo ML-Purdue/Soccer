@@ -50,10 +50,15 @@ namespace FootballSimulation
         public Vector2 Position { get; private set; }
 
         /// <summary>The velocity as calculated by <c>Velocity + Acceleration*time</c>.</summary>
-        public Vector2 Velocity { get; private set; }
+        public Vector2 Velocity { get; set; }
 
         /// <summary>The acceleration calculated as <c>Acceleration = force/Mass</c>.</summary>
         public Vector2 Acceleration { get; private set; }
+
+        /// <summary>
+        /// Get/set the id
+        /// </summary>
+        public string id { get; set; }
         
         /// <summary>The net force on the point mass.</summary>
         public Vector2 Force

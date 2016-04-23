@@ -95,6 +95,16 @@ namespace FootballSimulation
             _ball.Simulate(time);
             var normal = CollisionMath.GetCircleRectangleCollisionNormal(_ball.Position, _ball.Radius, PitchBounds);
             if (normal != null) _ball.ResolveCollision(normal.Value);
+            if (normal == null)
+            {
+                // CHeck if we are outside of the pitch
+                if (_ball.Position.X < PitchBounds.Left || _ball.Position.X > PitchBounds.Right || _ball.Position.Y < PitchBounds.Top || _ball.Position.Y > PitchBounds.Bottom)
+                {
+                    // - position because center is 0,0
+                    Console.WriteLine("Ball exited field!");
+                    _ball.Velocity = (-_ball.Position) * _ball.MaxSpeed;
+                }
+            }
             _teams.Where(t => t.GoalBounds.Contains(_ball.Position)).ForEach(OnGoalScored);
         }
 
